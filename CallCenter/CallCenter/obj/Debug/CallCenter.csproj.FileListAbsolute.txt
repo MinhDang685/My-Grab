@@ -1,0 +1,48 @@
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\bin\Debug\CallCenter.exe.config
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\bin\Debug\CallCenter.exe
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\bin\Debug\CallCenter.pdb
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.Form1.resources
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.Properties.Resources.resources
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.csproj.GenerateResource.Cache
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.exe
+c:\users\my-pc\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.pdb
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\FireSharp.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Newtonsoft.Json.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.xml
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.xml
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.xml
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\Newtonsoft.Json.xml
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\System.Net.Http.Extensions.xml
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\bin\Debug\System.Net.Http.Primitives.xml
+C:\Users\My-PC\Documents\Visual Studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.csproj.App.config
+C:\Users\My-PC\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.UserControlCallInfo.resources
+C:\Users\My-PC\documents\visual studio 2013\Projects\CallCenter\CallCenter\obj\Debug\CallCenter.csprojResolveAssemblyReference.cache
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\CallCenter.exe.config
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.exe
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.pdb
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\CallCenter.exe
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\CallCenter.pdb
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\FireSharp.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Newtonsoft.Json.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.xml
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.xml
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.xml
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\Newtonsoft.Json.xml
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\System.Net.Http.Extensions.xml
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\bin\Debug\System.Net.Http.Primitives.xml
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.csproj.App.config
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.csprojResolveAssemblyReference.cache
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.Form1.resources
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.Properties.Resources.resources
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.UserControlCallInfo.resources
+C:\Users\My-PC\Documents\doan\CNM-Grab\CallCenter\CallCenter\obj\Debug\CallCenter.csproj.GenerateResource.Cache

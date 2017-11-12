@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome to Vue</title>
+    <link rel="stylesheet" type="text/css" href="assests/bootstrap-3.3.7-dist/css/bootstrap.min.css"> 
+</head>
+
+<body>
+    <div class="container-fluid" id="app">
+      <div class="row">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+          <div v-for="book in books">
+              <div class="panel panel-default">
+                  <div class="panel-heading">
+                      {{book.name}}
+                      <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" @click="removeSelectedBook(book.name)"></span>
+                  </div>
+                  
+                  <div class="panel-body">
+                      {{book.author}}
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="col-md-offset-1 col-lg-offset-2"></div>
+
+        <div class=" col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <form>
+                  <legend>New book</legend>
+                  <div class="form-group">
+                    <label for="txtBookTitle">label</label>
+                    <input v-model="newBookTitle" id="txtBookTitle" type="text" class="form-control" placeholder="title">
+                  </div>
+                  <div class="form-group">
+                    <label for="txtBookContent">label</label>
+                    <input v-model="newBookContent" id="txtBookContent" type="text" class="form-control" placeholder="content">
+                  </div>
+                
+                  
+                
+                  <button type="button" class="btn btn-success" @click="addBook()">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> add
+                  </button>
+            </form>    
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="assests/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="assests/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="assests/vue.min.js"></script>
+    <script>
+        var app = new Vue({
+          el: '#app',
+          data: {
+            books:[
+              {
+                name: "Harry Potter",
+                author: "J.K. Rowling"
+              },
+              {
+                name: "Cho tôi xin một vé đi tuổi thơ",
+                author: "Nguyễn Nhật Ánh"
+              }
+            ],
+            newBookTitle: "",
+            newBookContent: ""
+          },
+          methods: {
+            addBook: function(){
+                var self = this;
+                var newBook = {
+                name: app.newBookTitle,
+                author: app.newBookContent
+              };
+                app.books.push(newBook);
+                console.log('asdf');
+            },
+
+            removeSelectedBook: function(bookName){
+                var self = this;
+                app.books.forEach(function(currentValue, index, arr){
+                  if(currentValue.name === bookName)
+                    app.books.splice(index, 1);
+                })
+            }
+          }
+        })
+
+        function add(){
+          app.data.push({
+            name: newBookTitle,
+            author: newBookContent
+          });
+        }
+    </script>
+</body>
+
+</html>
