@@ -122,6 +122,15 @@ function setMapOnAll(markers, map) {
         markers[i].setMap(map);
     }
 }
+
+function setMapOnAllExcept(markers, map, index) {
+    if(markers === null) return;
+    for (var i = 0; i < markers.length; i++) {
+        if(i !== index) {
+            markers[i].setMap(map);
+        }
+    }
+}
 //google.maps.event.addDomListener(window, 'load', initialize);
 
 // Initialize Firebase

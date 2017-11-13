@@ -72,5 +72,13 @@ namespace CallCenter
             get { return longtitude; }
             set { longtitude = value; }
         }
+
+        private string inputAddress;
+
+        public string InputAddress
+        {
+            get { return inputAddress; }
+            set { inputAddress = value; }
+        }
     }
 }

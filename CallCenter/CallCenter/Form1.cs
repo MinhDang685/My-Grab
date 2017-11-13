@@ -29,7 +29,8 @@ namespace CallCenter
             string callId = "";
             string phoneNumber = textBoxPhoneNumber.Text;
             DateTime callDate = DateTime.Now;
-            string address = textBoxAddress.Text;
+            string inputAddress = textBoxAddress.Text;
+            string address = "";
             int type = GetGrabType();
             string note = textBoxNote.Text;
             int status = ConstantValue.UNLOCATED;
@@ -41,6 +42,7 @@ namespace CallCenter
                 CallDate = callDate,
                 PhoneNumber = phoneNumber,
                 Address = address,
+                InputAddress = inputAddress,
                 Type = type,
                 Note = note,
                 Status = status,
