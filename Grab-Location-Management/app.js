@@ -11,6 +11,7 @@ var circle;
 var map;
 var cars = [];
 var infowindow;
+var selectedInfoWindow;
 var icons = {
     customerIcon: {
         icon: './assests/icon/marker-dest.png'
@@ -19,6 +20,7 @@ var icons = {
         icon: './assests/icon/marker-start.png'
     },
 };
+var searchRanges = [500, 1000, 2000];
 var cityCenter = {lat: 10.8043382, lng: 106.6565154};
 
 function initializeMap() {
@@ -108,10 +110,11 @@ function createMarker(map, point, content, iconId) {
             icon: iconPath
         });
     
-    var infowindow = new google.maps.InfoWindow();
+    infowindow = new google.maps.InfoWindow();
     google.maps.event.addListener(marker, "click", function(evt) {
         infowindow.setContent(content + "<br>" + marker.getPosition().toUrlValue(6));
         infowindow.open(map, marker);
+        selectedInfoWindow = infowindow;
     });
     return marker;
 }
