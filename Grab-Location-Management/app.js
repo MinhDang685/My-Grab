@@ -20,7 +20,7 @@ var icons = {
         icon: './assests/icon/marker-start.png'
     },
 };
-var searchRanges = [500, 1000, 2000];
+var searchRanges = [500, 1000, 10000];
 var cityCenter = {lat: 10.8043382, lng: 106.6565154};
 
 function initializeMap() {

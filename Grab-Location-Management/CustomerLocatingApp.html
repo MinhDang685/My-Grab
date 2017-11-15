@@ -8,21 +8,31 @@
 	<link rel="stylesheet" type="text/css" href="app.css">
 </head>
 <body>
-	
+	<div style="background-color: #5BC0DE; padding: 20px 0px">
+		<h1 style="padding-left: 80px; color: white;">BAGR</h1>
+	</div>
+	<br><br>
 	<div class="container-fluid" id="locating-app">
 		<div class="row">
 			<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-				<div v-for="call in calls">
-					<div class="list-group" >
-					    <a href="#" onclick="setSelected(this)" class="list-group-item" :data-call="JSON.stringify(call)">
-						    <h4 class="list-group-item-heading">{{call.value.PhoneNumber}}</h4>
-					    	<h5 style="color: orange" class="list-group-item-heading">{{call.value.CallDate}}</h5>
-						    
-						    <p class="list-group-item-text">
-						    	{{call.value.Address}} <br/> 
-						    	{{getCallCarType(call.value.Type)}}
-						    </p>
-						</a>
+				<div class="panel panel-info">
+					<div class="panel-heading">
+					    <h3 class="panel-title">Pending Call</h3>
+					</div>
+					<div class="panel-body">
+						<div v-for="call in calls">
+							<div class="list-group" >
+							    <a href="#" onclick="setSelected(this)" class="list-group-item" :data-call="JSON.stringify(call)">
+								    <h4 class="list-group-item-heading">{{call.value.PhoneNumber}}</h4>
+							    	<h5 style="color: orange" class="list-group-item-heading">{{call.value.CallDate}}</h5>
+								    
+								    <p class="list-group-item-text">
+								    	{{call.value.Address}} <br/> 
+								    	{{getCallCarType(call.value.Type)}}
+								    </p>
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -42,7 +52,7 @@
 						<button id="button-reset-customer-address" type="button" class="btn btn-danger" style="width: 100%">Reset</button>
 					</div>
 				</div>
-				<br><br><br><br>
+				<br><br><br>
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div id="map-locating-app" style="height: 500px; width: 100%">
 						
