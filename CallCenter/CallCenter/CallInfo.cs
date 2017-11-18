@@ -67,7 +67,7 @@ namespace CallCenter
         }
         private float longtitude;
 
-        public float Longtitude
+        public float Longitude
         {
             get { return longtitude; }
             set { longtitude = value; }

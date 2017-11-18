@@ -6,6 +6,7 @@ var locatingMap;
 var selectedCallDiv;
 var selectedCall;
 var selectedPointMarker;
+var clickListener;
 
 
 $(function () {
@@ -173,6 +174,7 @@ function mapGrabCarToCustomer(carKey) {
 	callRef.update({
 		Status: DONE,
 	});
+	removeClickListener();
 	$("#button-reset-customer-address").click();
 }
 
@@ -186,6 +188,8 @@ function setSelected(ele) {
 	let call = JSON.parse(ele.getAttribute("data-call"));
 	selectedCall = call;
 	$('#input-address').val(call.value.InputAddress);
+	//enable click listener
+	addClickListener();
 }
 
 function resetCustomerAddress() {
@@ -206,7 +210,11 @@ function initMapLocatingApp() {
     });
     directionsDisplay.setMap(locatingMap);
 	directionsDisplay.setOptions( { suppressMarkers: true } );
-	locatingMap.addListener('click', function (event) {
+	
+}
+
+function addClickListener() {
+	clickListener = locatingMap.addListener('click', function (event) {
 		let latLng = event.latLng;
 		if(typeof selectedPointMarker !== 'undefined') {
 			selectedPointMarker.setMap(null);
@@ -219,13 +227,16 @@ function initMapLocatingApp() {
             		let content = createCustomerMarkerInfoLocating(point, getMarkersLength());
             		let marker = createMarker(locatingMap, latLng, content, MARKER_CUSTOMER);
             		markers.push(marker);
+            		//infowindow.open(locatingMap, marker);
             		selectedPointMarker = marker;
             	}
             }
 		});
-          
-
 	});
+}
+
+function removeClickListener() {
+	locatingMap.removeListener(clickListener);
 }
 
 function getMarkersLength() {

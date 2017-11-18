@@ -23,7 +23,7 @@ namespace CallCenter
             InitializeComponent();
             FirebaseConfig();
         }
-
+        float lat = 0, lng = 0;
         private void buttonSend_Click(object sender, EventArgs e)
         {
             string callId = "";
@@ -33,9 +33,8 @@ namespace CallCenter
             string address = "";
             int type = GetGrabType();
             string note = textBoxNote.Text;
-            int status = ConstantValue.UNLOCATED;
-            float latitude = 0;
-            float longitude = 0;
+            float latitude = lat;
+            float longitude = lng;
             var callInfo = new CallInfo
             {
                 CallId = callId,
@@ -45,9 +44,9 @@ namespace CallCenter
                 InputAddress = inputAddress,
                 Type = type,
                 Note = note,
-                Status = status,
+                Status = addressStatus,
                 Latitude = latitude,
-                Longtitude = longitude,
+                Longitude = longitude,
             };
 
             PushAsync(callInfo);
@@ -129,9 +128,20 @@ namespace CallCenter
                 if (call.Value.PhoneNumber != null && call.Value.PhoneNumber.CompareTo(phoneNumber) == 0)
                 {
                     UserControlCallInfo userControlCallInfo = new UserControlCallInfo(call.Value);
+                    userControlCallInfo.Click +=userControlCallInfo_Click;
                     flowLayoutPanelHistory.Controls.Add(userControlCallInfo);
                 }
             }
+        }
+        private int addressStatus = ConstantValue.UNLOCATED;
+        public void userControlCallInfo_Click(object sender, EventArgs e)
+        {
+            UserControlCallInfo calledElement = sender as UserControlCallInfo;
+            textBoxAddress.Text = calledElement.GetAddress();
+            textBoxAddress.ReadOnly = true;
+            addressStatus = ConstantValue.FINDING_CAR;
+            lat = calledElement.GetLatitude();
+            lng = calledElement.GetLongitude();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
@@ -174,6 +184,12 @@ namespace CallCenter
         private void OnAdd(object sender, FireSharp.EventStreaming.ValueAddedEventArgs args, object context)
         {
             string tmp = args.Data;
+        }
+
+        private void buttonReset_Click(object sender, EventArgs e)
+        {
+            textBoxAddress.ReadOnly = false;
+            addressStatus = ConstantValue.UNLOCATED;
         }
 
 

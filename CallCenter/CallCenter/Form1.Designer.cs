@@ -34,6 +34,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanelHistory = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.buttonReset = new System.Windows.Forms.Button();
             this.textBoxAddress = new System.Windows.Forms.RichTextBox();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
@@ -108,6 +109,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.buttonReset);
             this.groupBox2.Controls.Add(this.textBoxAddress);
             this.groupBox2.Controls.Add(this.buttonCancel);
             this.groupBox2.Controls.Add(this.buttonSend);
@@ -125,6 +127,16 @@
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "INFO";
+            // 
+            // buttonReset
+            // 
+            this.buttonReset.Location = new System.Drawing.Point(395, 100);
+            this.buttonReset.Name = "buttonReset";
+            this.buttonReset.Size = new System.Drawing.Size(94, 29);
+            this.buttonReset.TabIndex = 15;
+            this.buttonReset.Text = "Reset Address";
+            this.buttonReset.UseVisualStyleBackColor = true;
+            this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
             // textBoxAddress
             // 
@@ -303,6 +315,7 @@
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.RichTextBox textBoxAddress;
         private System.Windows.Forms.RadioButton radioButtonStandard;
+        private System.Windows.Forms.Button buttonReset;
     }
 }
 

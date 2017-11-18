@@ -12,9 +12,12 @@ namespace CallCenter
 {
     public partial class UserControlCallInfo : UserControl
     {
+        UserControlCallInfo self = null;
+        float lat = 0, lng = 0;
         public UserControlCallInfo()
         {
             InitializeComponent();
+            self = this;
         }
 
         public UserControlCallInfo(CallInfo call)
@@ -24,6 +27,9 @@ namespace CallCenter
             this.labelStatus.Text = GetStatusMeaning(call.Status);
             this.labelStatus.ForeColor = GetStatusColor(call.Status);
             this.labelAddress.Text = call.Address;
+            this.labelInputAddress.Text = "(" + call.InputAddress + ")";
+            this.lat = call.Latitude;
+            this.lng = call.Longitude;
         }
 
         private Color GetStatusColor(int status)
@@ -56,6 +62,26 @@ namespace CallCenter
         private void UserControlCallInfo_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void UserControlCallInfo_MouseClick(object sender, MouseEventArgs e)
+        {
+            
+        }
+
+        public string GetAddress()
+        {
+            return labelAddress.Text;
+        }
+
+        public float GetLatitude()
+        {
+            return lat;
+        }
+
+        public float GetLongitude()
+        {
+            return lng;
         }
     }
 }
