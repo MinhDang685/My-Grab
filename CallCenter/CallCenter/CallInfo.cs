@@ -80,5 +80,13 @@ namespace CallCenter
             get { return inputAddress; }
             set { inputAddress = value; }
         }
+
+        private Boolean isLocked;
+
+        public Boolean IsLocked
+        {
+            get { return isLocked; }
+            set { isLocked = value; }
+        }
     }
 }

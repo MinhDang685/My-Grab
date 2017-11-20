@@ -14,7 +14,7 @@
 	<br><br>
 	<div class="container-fluid" id="locating-app">
 		<div class="row">
-			<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
 				<div class="panel panel-info">
 					<div class="panel-heading">
 					    <h3 class="panel-title">Pending Call</h3>
@@ -36,7 +36,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+			<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
 						<div class="input-group">
@@ -56,6 +56,27 @@
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div id="map-locating-app" style="height: 500px; width: 100%">
 						
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+					    <h3 class="panel-title">Available Cars</h3>
+					</div>
+					<div class="panel-body">
+						<div v-for="car in cars">
+							<div class="list-group" >
+							    <a href="#" onclick="setCenterToThisPoint(this)" class="list-group-item" :data-car="JSON.stringify(car)">
+								    <h4 class="list-group-item-heading">GrabCar&nbsp;{{car.value.carId}}</h4>
+								    <p class="list-group-item-text">
+								    	<p style="color: orange;">
+								    		{{car.value.type}}
+								    	</p>
+								    </p>
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

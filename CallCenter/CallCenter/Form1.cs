@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -47,6 +49,7 @@ namespace CallCenter
                 Status = addressStatus,
                 Latitude = latitude,
                 Longitude = longitude,
+                IsLocked = false
             };
 
             PushAsync(callInfo);
@@ -117,6 +120,22 @@ namespace CallCenter
             textBoxAddress.Enabled = true;
             textBoxNote.Enabled = true;
             string phoneNumber = textBoxPhoneNumber.Text;
+
+            string html = string.Empty;
+            string url = @"https://us-central1-my-grab.cloudfunctions.net/getCustomerCallHistoryByPhoneNumber?phoneNumber=090";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.AutomaticDecompression = DecompressionMethods.GZip;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                html = reader.ReadToEnd();
+            }
+
+            calls = JsonConvert.DeserializeObject<Dictionary<string, CallInfo>>(html);
+
             LoadHistory(phoneNumber);
         }
 
@@ -163,7 +182,7 @@ namespace CallCenter
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            calls = await GetListAsync();
+            //calls = await GetListAsync();
             textBoxAddress.Enabled = false;
             textBoxNote.Enabled = false;
             radioButtonStandard.Checked = true;

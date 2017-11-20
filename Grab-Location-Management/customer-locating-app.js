@@ -2,12 +2,14 @@ var directionsService;
 var directionsDisplay;
 var geocoder;
 var markers = [];
+var infowindows = [];
 var locatingMap;
 var selectedCallDiv;
 var selectedCall;
 var selectedPointMarker;
-var clickListener;
-
+var clickListener = null;
+var selectedCarDiv;
+var requestedCall = {key: ''};
 
 $(function () {
 	$('#button-reset-customer-address').click(function() {
@@ -55,6 +57,18 @@ function showResultsOnMap(results) {
     locatingMap.setCenter(results[0].geometry.location);
 }
 
+function setCenterToThisPoint(ele) {
+	let car = JSON.parse(ele.getAttribute("data-car"));
+	var self = ele;
+	if(typeof selectedCarDiv !== 'undefined'){
+		$(selectedCarDiv).removeClass("active");
+	}
+	$(self).addClass("active");
+	selectedCarDiv = self;
+	let point = new google.maps.LatLng(car.value.latitude, car.value.longitude);
+	locatingMap.setCenter(point);
+}
+
 function createCustomerMarkerInfoLocating(point, index) {
 	let res = "";
 	res += "<p>"+ point.formatted_address +"</p>";
@@ -67,14 +81,12 @@ function createCustomerMarkerInfoLocating(point, index) {
 	return res;
 }	
 
-function createCustomerMarkerInfoNoCar(point, index) {
-	let res = "";
-	res += "<p>"+ point.formatted_address +"</p>";
-	res += "<div class=\"text-center\">";
-	res += "<button type=\"button\" class=\"btn btn-success\" onclick=\"findGrabCar(" + index + "," + point.geometry.location +")\">";
-	res += "Lưu và bắt đầu tìm xe</button>";
-	res += "</div>";
-
+function createCustomerMarkerInfoNoCar() {
+	res = "";
+	res += "Không có xe nào gần đây <br>";
+	res += "<button type=\"button\" class=\"btn btn-success\" onclick=\"";
+	res += "setNoCar()\">";
+	res += "Cập nhật trạng thái không có xe</button>";
 	return res;
 }	
 
@@ -85,6 +97,7 @@ function findGrabCar(index, lat, lng) {
 	let marker = markers[index];
 	setMapOnAllExcept(markers, null, index);
 	markers = [];
+	infowindows = [];
 	markers.push(marker);
 
 	//set center of map to this point
@@ -94,26 +107,70 @@ function findGrabCar(index, lat, lng) {
 }
 
 function showAvailableCars(map, center) {
+	removeClickListener();
 	let i,j;
 	let count = 0;
-	for(i = 0; i < 3; i++) {
-		for(j = 0; j < vm.cars.length; j++) {
-			if(rightType(vm.cars[j]) && inRange(center, vm.cars[j], searchRanges[i])) {
-				count++;
-				let latLng = new google.maps.LatLng(vm.cars[j].value.latitude, vm.cars[j].value.longitude);
-				let marker = createMarker(map, latLng, createGrabCarInfo(vm.cars[j]), MARKER_GRABER);
-				markers.push(marker);
+	vm.cars = [];
+	// for(i = 0; i < 3; i++) {
+	// 	for(j = 0; j < vm.cars.length; j++) {
+	// 		if(rightType(vm.cars[j]) && inRange(center, vm.cars[j], searchRanges[i])) {
+	// 			count++;
+	// 			let latLng = new google.maps.LatLng(vm.cars[j].value.latitude, vm.cars[j].value.longitude);
+	// 			let marker = createMarker(map, latLng, createGrabCarInfo(vm.cars[j]), MARKER_GRABER);
+	// 			markers.push(marker);
+	// 		}
+	// 		if(count >= 10) break;
+	// 	}
+	// 	if(count >= 10) break;
+	// }
+
+	let url = `https://us-central1-my-grab.cloudfunctions.net/getGrabCarsNearThere`;
+	url += `?lat=${center.lat()}&lng=${center.lng()}&type=${vm.getCallCarType(selectedCall.value.Type)}`;
+	// $.getJSON({
+	//     'url': url,
+	//     function(result) {
+	//         result.forEach(function(car, index) {
+	//             let latLng = new google.maps.LatLng(car.value.latitude, car.value.longitude);
+	//             let marker = createMarker(map, latLng, createGrabCarInfo(vm.cars[j]), MARKER_GRABER);
+	//             markers.push(marker);
+	//         });
+	//         count = result.length;
+	//         vm.cars = result.val();
+	//     }
+	// });
+
+	// $.ajax({
+	//     url: url,
+	//     success: function(data){
+	//     	console.log('ahihi');
+	//     },
+	//     dataType: 'jsonp'
+	// });
+
+	$.ajax({
+	    url: url,
+	    dataType: 'json',
+	    success: function(result) {
+	        result.forEach(function(car, index) {
+	            let latLng = new google.maps.LatLng(car.value.latitude, car.value.longitude);
+	            let marker = createMarker(map, latLng, createGrabCarInfo(car), MARKER_GRABER);
+	            markers.push(marker);
+	            vm.cars.push(car);
+	        });
+	        count = result.length;
+	        console.log(`Get cars list success: ${count} cars available`);
+			if(count === 0) {
+				$(".div-find-car").html(createCustomerMarkerInfoNoCar());
+			}else {
+				let availableCarsInfo = "Có " + count + " xe đang rảnh";
+				$(".div-find-car").html(availableCarsInfo);
 			}
-			if(count >= 10) break;
-		}
-		if(count >= 10) break;
-	}
+
+	    },
+	    type: 'GET'
+	});
+
 	
-	let availableCarsInfo = "Có " + count + " xe phù hợp";
-	$(".div-find-car").html(availableCarsInfo);
-	if(markers.length === 0) {
-		alert("Không có xe");
-	}
 }
 
 function rightType(car) {
@@ -131,19 +188,19 @@ function inRange(center, car, range) {
 }
 
 var rad = function(x) {
-  return x * Math.PI / 180;
+    return x * Math.PI / 180;
 };
 
 var getDistance = function(p1, p2) {
-  var R = 6378137; // Earth’s mean radius in meter
-  var dLat = rad(p2.lat() - p1.lat());
-  var dLong = rad(p2.lng() - p1.lng());
-  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) *
-    Math.sin(dLong / 2) * Math.sin(dLong / 2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var d = R * c;
-  return d; // returns the distance in meter
+    var R = 6378137; // Earth’s mean radius in meter
+    var dLat = rad(p2.lat() - p1.lat());
+    var dLong = rad(p2.lng() - p1.lng());
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) *
+        Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d; // returns the distance in meter
 };
 
 function calculateDistanceFromPointToPoint(pointA, pointB) {
@@ -178,24 +235,69 @@ function mapGrabCarToCustomer(carKey) {
 	$("#button-reset-customer-address").click();
 }
 
+function setNoCar() {
+	let callPath = CALL_HISTORY + "/" + selectedCall.key;
+	let callRef = database.ref(callPath);
+	callRef.update({
+		Status: NO_CAR,
+	});
+	removeClickListener();
+	$("#button-reset-customer-address").click();1
+}
+
 function setSelected(ele) {
+	resetCustomerAddress();
+	vm.cars = [];
+	if(clickListener !== null) {
+		removeClickListener();
+	}
+	let call = JSON.parse(ele.getAttribute("data-call"));
+	requestedCall = call;
+	if(!requestCall(call.key)) {
+		alert('Cuộc gọi đã được thành viên khác tiếp nhận');
+		return;
+	}
 	var self = ele;
 	if(typeof selectedCallDiv !== 'undefined'){
 		$(selectedCallDiv).removeClass("active");
 	}
 	$(self).addClass("active");
 	selectedCallDiv = self;
-	let call = JSON.parse(ele.getAttribute("data-call"));
+	
 	selectedCall = call;
-	$('#input-address').val(call.value.InputAddress);
-	//enable click listener
-	addClickListener();
+
+	if (selectedCall.value.Status === FINDING_CAR) {
+		searchGeocode(selectedCall.value.Address);
+	}
+	else {
+		$('#input-address').val(call.value.InputAddress);
+		//enable click listener for marker
+		addClickListener();
+	}
+}
+
+function requestCall(key) {
+	let url = `https://us-central1-my-grab.cloudfunctions.net/requestCall?key=${key}`;
+	return $.ajax({
+	    url: url,
+	    dataType: 'json',
+	    success: function(data) {
+	        if(data === 'Reject') {
+	        	return false;
+	        }
+	        else {
+	        	return true;
+	        }
+	    },
+	    type: 'GET'
+	});
 }
 
 function resetCustomerAddress() {
 	$('#input-address').val("");
 	setMapOnAll(markers, null);
 	markers=[];
+	vm.cars = [];
 }
 
 function initMapLocatingApp() {
@@ -224,19 +326,27 @@ function addClickListener() {
 			if (status === 'OK') {
 				let point = results[0];
             	if (point) {
-            		let content = createCustomerMarkerInfoLocating(point, getMarkersLength());
-            		let marker = createMarker(locatingMap, latLng, content, MARKER_CUSTOMER);
-            		markers.push(marker);
-            		//infowindow.open(locatingMap, marker);
-            		selectedPointMarker = marker;
+            		// let content = createCustomerMarkerInfoLocating(point, getMarkersLength());
+            		// let marker = createMarker(locatingMap, latLng, content, MARKER_CUSTOMER);
+            		// markers.push(marker);
+            		// selectedPointMarker = marker;
+            		createPointMarker(point);
             	}
             }
 		});
 	});
 }
 
+function createPointMarker(point) {
+	let content = createCustomerMarkerInfoLocating(point, getMarkersLength());
+	let marker = createMarker(locatingMap, point.geometry.location, content, MARKER_CUSTOMER);
+	markers.push(marker);
+	selectedPointMarker = marker;
+}
+
 function removeClickListener() {
-	locatingMap.removeListener(clickListener);
+	google.maps.event.removeListener(clickListener);
+	clickListener = null;
 }
 
 function getMarkersLength() {
@@ -254,32 +364,12 @@ var vm = new Vue({
 	mounted: function(){
 		var self = this;
 		callsRef.on('child_added', function(childSnapshot, prevChildKey) {
-			if(childSnapshot.val().Status === UNLOCATED || childSnapshot.val().Status === FINDING_CAR) {
+			if((childSnapshot.val().Status === UNLOCATED || childSnapshot.val().Status === FINDING_CAR) 
+				&& childSnapshot.val().IsLocked === false ) {
 				self.calls.push({
 					key: childSnapshot.key,
 					value: childSnapshot.val(),
 				});
-			}
-		});
-
-		grabCarsRef.on('child_added', function(childSnapshot, prevChildKey) {
-			if(childSnapshot.val().match === "") {
-				self.cars.push({
-					key: childSnapshot.key,
-					value: childSnapshot.val(),
-				});
-			}
-		});
-		grabCarsRef.on('child_changed', function(childSnapshot, prevChildKey) {
-			let i;
-			for(i = 0; i<self.cars.length; i++) {
-				if(self.cars[i].key.indexOf(childSnapshot.key) !== -1) {
-					self.cars[i].value = childSnapshot.val();
-					if(self.cars[i].value.match !== "") {
-						self.cars.splice(i, 1);
-					}
-					break;
-				}
 			}
 		});
 
@@ -288,13 +378,35 @@ var vm = new Vue({
 			for(i = 0; i<self.calls.length; i++) {
 				if(self.calls[i].key.indexOf(childSnapshot.key) !== -1) {
 					self.calls[i].value = childSnapshot.val();
-					if(self.calls[i].value.Status === NO_CAR || self.calls[i].value.Status === DONE) {
+					if(self.calls[i].value.Status === NO_CAR || self.calls[i].value.Status === DONE 
+						|| (self.calls[i].value.IsLocked === true && self.calls[i].key !== requestedCall.key)) {
 						self.calls.splice(i, 1);
 					}
 					break;
 				}
 			}
 		});
+
+		// grabCarsRef.on('child_added', function(childSnapshot, prevChildKey) {
+		// 	if(childSnapshot.val().match === "") {
+		// 		self.cars.push({
+		// 			key: childSnapshot.key,
+		// 			value: childSnapshot.val(),
+		// 		});
+		// 	}
+		// });
+		// grabCarsRef.on('child_changed', function(childSnapshot, prevChildKey) {
+		// 	let i;
+		// 	for(i = 0; i<self.cars.length; i++) {
+		// 		if(self.cars[i].key.indexOf(childSnapshot.key) !== -1) {
+		// 			self.cars[i].value = childSnapshot.val();
+		// 			if(self.cars[i].value.match !== "") {
+		// 				self.cars.splice(i, 1);
+		// 			}
+		// 			break;
+		// 		}
+		// 	}
+		// });
 	},
 	methods: {
 		getStatusClass: function(status) {
