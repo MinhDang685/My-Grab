@@ -142,26 +142,11 @@ var vm = new Vue({
 	mounted: function(){
 		var self = this;
 		callsRef.on('child_added', function(childSnapshot, prevChildKey) {
-			self.calls.push({
-				key: childSnapshot.key,
-				value: childSnapshot.val(),
-			});
-		});
-
-		grabCarsRef.on('child_added', function(childSnapshot, prevChildKey) {
-			self.cars.push({
-				key: childSnapshot.key,
-				value: childSnapshot.val(),
-			});
-		});
-		grabCarsRef.on('child_changed', function(childSnapshot, prevChildKey) {
-			let i;
-			for(i=0; i<self.cars.length; i++) {
-				if(self.cars[i].key.indexOf(childSnapshot.key) !== -1) {
-					self.cars[i].key = childSnapshot.key;
-					self.cars[i].value = childSnapshot.val();
-					break;
-				}
+			if (childSnapshot.val().Status !== 4) {
+			    self.calls.push({
+			        key: childSnapshot.key,
+			        value: childSnapshot.val(),
+			    });
 			}
 		});
 
