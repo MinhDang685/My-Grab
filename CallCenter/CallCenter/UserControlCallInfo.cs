@@ -56,8 +56,8 @@ namespace CallCenter
                 return "Không có xe nhận";
             else if (status == ConstantValue.DONE)
                 return "Đặt thành công";
-
-            return "";
+            else
+                return "Hoàn tất";
         }
         private void UserControlCallInfo_Load(object sender, EventArgs e)
         {

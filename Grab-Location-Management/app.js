@@ -4,6 +4,7 @@ const UNLOCATED = 0;
 const FINDING_CAR = 1;
 const NO_CAR = 2;
 const DONE = 3;
+const COMPLETE = 4;
 const MARKER_CUSTOMER = "customerIcon";
 const MARKER_GRABER = "graberIcon";
 var BreakException = {};
@@ -34,7 +35,7 @@ function initializeMap() {
 
     circle = new google.maps.Circle({
         center: map.getCenter(),
-        radius: 10000, // meters
+        radius: 8000, // meters
         strokeColor: "#0000FF",
         strokeOpacity: 0.8,
         strokeWeight: 2,
@@ -184,6 +185,18 @@ function loadNode(path, key) {
   	.then(function(snapshot) {
 		return snapshot.val();
   	});
+}
+
+function formatDate(strDate) {
+    var date = new Date(strDate);
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + strTime;
 }
 
 

@@ -10,6 +10,7 @@ var selectedPointMarker;
 var clickListener = null;
 var selectedCarDiv;
 var requestedCall = {key: ''};
+var procededAddress = "";
 
 $(function () {
 	$('#button-reset-customer-address').click(function() {
@@ -70,6 +71,7 @@ function setCenterToThisPoint(ele) {
 }
 
 function createCustomerMarkerInfoLocating(point, index) {
+	procededAddress = point.formatted_address;
 	let res = "";
 	res += "<p>"+ point.formatted_address +"</p>";
 	res += "<div class=\"text-center div-find-car\">";
@@ -104,6 +106,9 @@ function findGrabCar(index, lat, lng) {
 	locatingMap.setCenter(marker.position);
 	locatingMap.setZoom(16);
 	showAvailableCars(locatingMap, marker.position);
+
+	//update call address
+	updateCallAddress();
 }
 
 function showAvailableCars(map, center) {
@@ -232,7 +237,16 @@ function mapGrabCarToCustomer(carKey) {
 		Status: DONE,
 	});
 	removeClickListener();
+	alert(`Đặt xe thành công cho cuộc gọi ${selectedCall.value.PhoneNumber}`);
 	$("#button-reset-customer-address").click();
+}
+
+function updateCallAddress() {
+	let callPath = CALL_HISTORY + "/" + selectedCall.key;
+	let callRef = database.ref(callPath);
+	callRef.update({
+		Address: procededAddress
+	});
 }
 
 function setNoCar() {
@@ -444,6 +458,13 @@ var vm = new Vue({
 				case 2:	
 					return "Premium";
 			};
+		},
+
+		getDisplayAddress: function(inputAddress, address) {
+			if(address !== "") {
+				return address;
+			}
+			return inputAddress;
 		},
 	}
 });

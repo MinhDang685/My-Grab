@@ -9,9 +9,9 @@
 </head>
 <body>
 	<div style="background-color: #5BC0DE; padding: 20px 0px">
-		<h1 style="padding-left: 80px; color: white;">BAGR</h1>
+		<h1 style="padding-left: 80px; color: white;">BAGR - Customer Locating App</h1>
 	</div>
-	<br><br>
+	<br>
 	<div class="container-fluid" id="locating-app">
 		<div class="row">
 			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
@@ -24,10 +24,10 @@
 							<div class="list-group" >
 							    <a href="#" onclick="setSelected(this)" class="list-group-item" :data-call="JSON.stringify(call)">
 								    <h4 class="list-group-item-heading">{{call.value.PhoneNumber}}</h4>
-							    	<h5 style="color: orange" class="list-group-item-heading">{{call.value.CallDate}}</h5>
+							    	<h5 style="color: orange" class="list-group-item-heading">{{formatDate(call.value.CallDate)}}</h5>
 								    
 								    <p class="list-group-item-text">
-								    	{{call.value.Address}} <br/> 
+								    	{{getDisplayAddress(call.value.InputAddress, call.value.Address)}} <br/> 
 								    	{{getCallCarType(call.value.Type)}}
 								    </p>
 								</a>
@@ -72,6 +72,10 @@
 								    <p class="list-group-item-text">
 								    	<p style="color: orange;">
 								    		{{car.value.type}}
+								    	</p>
+								    	<br>
+								    	<p style="color: green;">
+								    		{{parseInt(car.distance)}} meters
 								    	</p>
 								    </p>
 								</a>

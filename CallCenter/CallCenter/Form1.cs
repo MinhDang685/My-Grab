@@ -33,6 +33,10 @@ namespace CallCenter
             DateTime callDate = DateTime.Now;
             string inputAddress = textBoxAddress.Text;
             string address = "";
+            if (addressStatus == ConstantValue.FINDING_CAR)
+            {
+                address = inputAddress;
+            }
             int type = GetGrabType();
             string note = textBoxNote.Text;
             float latitude = lat;
@@ -53,6 +57,7 @@ namespace CallCenter
             };
 
             PushAsync(callInfo);
+            MessageBox.Show("Gửi yêu cầu thành công !!!", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
             ClearHistory();
             ResetTextboxForNewCall();
         }
@@ -118,11 +123,12 @@ namespace CallCenter
             //var list = await getHistory;
             textBoxPhoneNumber.Enabled = false;
             textBoxAddress.Enabled = true;
+            textBoxAddress.ReadOnly = false;
             textBoxNote.Enabled = true;
             string phoneNumber = textBoxPhoneNumber.Text;
 
             string html = string.Empty;
-            string url = @"https://us-central1-my-grab.cloudfunctions.net/getCustomerCallHistoryByPhoneNumber?phoneNumber=090";
+            string url = @"https://us-central1-my-grab.cloudfunctions.net/getCustomerCallHistoryByPhoneNumber?phoneNumber=" + phoneNumber;
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.AutomaticDecompression = DecompressionMethods.GZip;
@@ -135,8 +141,10 @@ namespace CallCenter
             }
 
             calls = JsonConvert.DeserializeObject<Dictionary<string, CallInfo>>(html);
-
-            LoadHistory(phoneNumber);
+            if (calls != null)
+            {
+                LoadHistory(phoneNumber);
+            }
         }
 
         private void LoadHistory(string phoneNumber)

@@ -23,17 +23,29 @@ function showOnMap(callElement) {
 	markers=[];
 	let call = JSON.parse(callElement.getAttribute("data-call"));
 	if(call.value.Status === DONE) {
-		try {
-			vm.cars.forEach(function(car, index) {
-				let carMatch = car.value.match;
-				if(carMatch.indexOf(call.key) !== -1) {
-					drawDirectionForThisCar(car, call);
-					throw BreakException;
-				}
+		let url = `https://us-central1-my-grab.cloudfunctions.net/getCarByCallId?key=${call.key}`;
+		$.ajax({
+			    url: url,
+			    dataType: 'json',
+			    success: function(result) {
+			    	if(result !== ""){
+			    		drawDirectionForThisCar(result, call);
+			    	}
+			    },
+			    type: 'GET'
 			});
-		} catch (e) {
-			if (e !== BreakException) throw e;
-		}
+
+		// try {
+		// 	vm.cars.forEach(function(car, index) {
+		// 		let carMatch = car.value.match;
+		// 		if(carMatch.indexOf(call.key) !== -1) {
+		// 			drawDirectionForThisCar(car, call);
+		// 			throw BreakException;
+		// 		}
+		// 	});
+		// } catch (e) {
+		// 	if (e !== BreakException) throw e;
+		// }
 	}
 	else {
 		
@@ -69,7 +81,7 @@ function geocodeAddress(geocoder, address, resultsMap) {
 }
 
 function drawDirectionForThisCar(car, call) {
-	var start = new google.maps.LatLng(car.value.latitude, car.value.longitude);
+	var start = new google.maps.LatLng(car.latitude, car.longitude);
 	var end = call.value.Address;
     var request = {
         origin: start,
@@ -95,7 +107,7 @@ function drawDirectionForThisCar(car, call) {
 			    });
 			    markers.push(marker);
 			});
-			var content = "Grab " + car.value.type + " " + car.value.carId;
+			var content = "Grab " + car.type + " " + car.carId;
 			let marker = createMarker(managementMap, start, content, MARKER_GRABER);
 			markers.push(marker);
         }
@@ -159,6 +171,9 @@ var vm = new Vue({
 				if(self.calls[i].key.indexOf(childSnapshot.key) !== -1) {
 					self.calls[i].key = childSnapshot.key;
 					self.calls[i].value = childSnapshot.val();
+					if(self.calls[i].value.Status === COMPLETE){
+						self.calls.splice(i, 1);
+					}
 					break;
 				}
 			}
@@ -170,13 +185,27 @@ var vm = new Vue({
 				case UNLOCATED:
 					return "unlocated";
 				case FINDING_CAR:
-					return "finding";
+					return "finding car";
 				case NO_CAR:
 					return "no-car";
 				case DONE:
 					return "done";
 			};
 			return "done";
+		},
+
+		getStatusName: function(status) {
+			switch(status) {
+				case UNLOCATED:
+					return "Unlocated";
+				case FINDING_CAR:
+					return "Finding car";
+				case NO_CAR:
+					return "No car";
+				case DONE:
+					return "Done";
+			};
+			return "Done";
 		},
 
 		getCallStatusColor: function(status) {
@@ -200,6 +229,13 @@ var vm = new Vue({
 				case 2:	
 					return "Premium";
 			};
+		},
+
+		getDisplayAddress: function(inputAddress, address) {
+			if(address !== "") {
+				return address;
+			}
+			return inputAddress;
 		},
 	}
 });

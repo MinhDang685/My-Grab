@@ -17,10 +17,18 @@ exports.getCustomerCallHistoryByPhoneNumber = functions.https.onRequest((request
         .orderByChild('PhoneNumber').equalTo(phoneNumber)
         .once('value', function (snapshot) {
             let calls = snapshot.val();
-            console.log(`Phone number: ${phoneNumber} have been call ${Object.keys(calls).length} time(s)`);
-            response.status(200);
-            response.json(calls);
-            response.end();
+            if(calls !== null) {
+                console.log(`Phone number: ${phoneNumber} have been call ${Object.keys(calls).length} time(s)`);
+                response.status(200);
+                response.json(calls);
+                response.end();
+            }
+            else {
+                console.log(`This phone number ${phoneNumber} does not have call history`);
+                response.status(200);
+                response.send("");
+                response.end();
+            }
         });
 });
 
@@ -57,10 +65,12 @@ exports.getGrabCarsNearThere = functions.https.onRequest((request, response) => 
                             lat: car.val().latitude,
                             lng: car.val().longitude
                         };
-                        if (getDistance(center, point) <= radius && car.val().type === carRequestType) {
+                        let distance = getDistance(center, point);
+                        if (distance <= radius && car.val().type === carRequestType) {
                             if (count < 10) {
                                 let carObject = {
                                     key: car.key,
+                                    distance: distance,
                                     value: car.val(),
                                 };
                                 carsList.push(carObject);
@@ -91,18 +101,26 @@ exports.resetGrabCarState = functions.database.ref(GRABCAR + "/{carID}")
         console.log(`Reset car ${car.carId}'s state after 120s`);
         setTimeout(() => {
             updateCarState(event.data.ref, car);
-        }, 5000);
+        }, 10000);
         return true;
 });
 
-var updateCarState = function(ref, car) {
-    console.log('Start to reset');
-    let updateDb = ref.update({
+var updateCarState = function(carRef, car) {
+    //set call state = complete
+    let callRef = admin.database().ref(CALL_HISTORY + `/${car.match}`);
+    let updateCallDb = callRef.update({
+        Status: 4,
+    }).then(function(){
+        console.log(`Call Id = ${car.match} is complete now`);
+    });
+    //reset grab car state
+    let updateCarDb = carRef.update({
         match: "",
     }).then(function(){
         console.log(`GrabCar Id = ${car.carId} is available now`);
     });
-    return Promise.all([updateDb]);
+    
+    return Promise.all([updateCarDb, updateCallDb]);
 };
 
 exports.requestCall = functions.https.onRequest((request, response) => {
@@ -123,3 +141,19 @@ exports.requestCall = functions.https.onRequest((request, response) => {
         });
     });
 });
+
+exports.getCarByCallId = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let callId = request.query.key;
+        let ref = admin.database().ref(GRABCAR);
+        return ref.once('value').then(snapshot => {
+            snapshot.forEach(function(car, index){
+                if(car.val().match === callId) {
+                    response.status(200).json(car).end();
+                }
+            });
+            response.status(200).json("").end();
+        });
+    });
+});
+

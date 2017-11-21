@@ -9,9 +9,9 @@
 </head>
 <body>
 	<div style="background-color: #5BC0DE; padding: 20px 0px">
-		<h1 style="padding-left: 80px; color: white;">BAGR</h1>
+		<h1 style="padding-left: 80px; color: white;">BAGR - Management App</h1>
 	</div>
-	<br><br><br>
+	<br>
 	<div class="container-fluid" id="management-app">
 		<div class="row">
 			<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
@@ -23,10 +23,13 @@
 						<div v-for="call in calls">
 							<div class="list-group" >
 							    <a href="#" onclick="setSelected(this)" class="list-group-item" v-bind:class="getStatusClass(call.value.Status)" :data-call="JSON.stringify(call)">
-								    <h4 class="list-group-item-heading">{{call.value.PhoneNumber}}</h4>
-							    	<h5 style="color: orange" class="list-group-item-heading">{{call.value.CallDate}}</h5>
+								    <div style="width: 100%; display: inline-block;">
+								    	<h4 class="list-group-item-heading col-md-9 ">{{call.value.PhoneNumber}}</h4>
+								    	<h4 class="list-group-item-heading col-md-3 ">{{getStatusName(call.value.Status)}}</h4>	
+								    </div>
+							    	<h5 style="color: orange" class="list-group-item-heading">{{formatDate(call.value.CallDate)}}</h5>
 								    <p class="list-group-item-text">
-								    	{{call.value.Address}} <br/> 
+								    	{{getDisplayAddress(call.value.InputAddress, call.value.Address)}} <br/> 
 								    	{{getCallCarType(call.value.Type)}}
 								    </p>
 								</a>
@@ -36,7 +39,6 @@
 				</div>
 			</div>
 			<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-				<br><br>
 				<div id="map-management-app" style="height: 600px; width: 100%">
 					
 				</div>

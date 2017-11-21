@@ -1,15 +1,20 @@
-.unlocated {
-	background-color: White;
+.unlocated .list-group-item-heading.col-md-3{
+	color: White;
 }
 
-.finding {
-	background-color: Blue;
+.finding .list-group-item-heading.col-md-3{
+	color: Blue;
 }
 
-.no-car {
-	background-color: Violet;
+.no-car .list-group-item-heading.col-md-3{
+	color: Violet;
 }
 
-.done {
-	background-color: LightSeaGreen;
+.done .list-group-item-heading.col-md-3{
+	color: LightSeaGreen;
+}
+
+.panel-body{
+    max-height: 500px;
+    overflow-y:scroll; 
 }
