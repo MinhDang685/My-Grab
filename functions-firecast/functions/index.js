@@ -85,12 +85,16 @@ exports.getGrabCarsNearThere = functions.https.onRequest((request, response) => 
                 }
                 console.log(`There are ${count} available cars near the point (${center.lat}, ${center.lng})`);
                 response.status(200);
-                response.json(carsList);
+                response.json(carsList.sort(sortByDistance));
                 response.end();
             });
     });
     
 });
+
+var sortByDistance = function(a, b) {
+    return a.distance > b.distance;
+}
 
 exports.resetGrabCarState = functions.database.ref(GRABCAR + "/{carID}")
     .onUpdate(event => {

@@ -68,6 +68,9 @@ function setCenterToThisPoint(ele) {
 	selectedCarDiv = self;
 	let point = new google.maps.LatLng(car.value.latitude, car.value.longitude);
 	locatingMap.setCenter(point);
+	selectedInfoWindow.close();
+	selectedInfoWindow = markers[car.index].infowindow;
+	markers[car.index].infowindow.open(locatingMap, markers[car.index]);
 }
 
 function createCustomerMarkerInfoLocating(point, index) {
@@ -99,12 +102,11 @@ function findGrabCar(index, lat, lng) {
 	let marker = markers[index];
 	setMapOnAllExcept(markers, null, index);
 	markers = [];
-	infowindows = [];
 	markers.push(marker);
 
 	//set center of map to this point
 	locatingMap.setCenter(marker.position);
-	locatingMap.setZoom(16);
+	locatingMap.setZoom(15);
 	showAvailableCars(locatingMap, marker.position);
 
 	//update call address
@@ -115,42 +117,11 @@ function showAvailableCars(map, center) {
 	removeClickListener();
 	let i,j;
 	let count = 0;
+	infowindows = [];
 	vm.cars = [];
-	// for(i = 0; i < 3; i++) {
-	// 	for(j = 0; j < vm.cars.length; j++) {
-	// 		if(rightType(vm.cars[j]) && inRange(center, vm.cars[j], searchRanges[i])) {
-	// 			count++;
-	// 			let latLng = new google.maps.LatLng(vm.cars[j].value.latitude, vm.cars[j].value.longitude);
-	// 			let marker = createMarker(map, latLng, createGrabCarInfo(vm.cars[j]), MARKER_GRABER);
-	// 			markers.push(marker);
-	// 		}
-	// 		if(count >= 10) break;
-	// 	}
-	// 	if(count >= 10) break;
-	// }
 
 	let url = `https://us-central1-my-grab.cloudfunctions.net/getGrabCarsNearThere`;
 	url += `?lat=${center.lat()}&lng=${center.lng()}&type=${vm.getCallCarType(selectedCall.value.Type)}`;
-	// $.getJSON({
-	//     'url': url,
-	//     function(result) {
-	//         result.forEach(function(car, index) {
-	//             let latLng = new google.maps.LatLng(car.value.latitude, car.value.longitude);
-	//             let marker = createMarker(map, latLng, createGrabCarInfo(vm.cars[j]), MARKER_GRABER);
-	//             markers.push(marker);
-	//         });
-	//         count = result.length;
-	//         vm.cars = result.val();
-	//     }
-	// });
-
-	// $.ajax({
-	//     url: url,
-	//     success: function(data){
-	//     	console.log('ahihi');
-	//     },
-	//     dataType: 'jsonp'
-	// });
 
 	$.ajax({
 	    url: url,
@@ -159,6 +130,7 @@ function showAvailableCars(map, center) {
 	        result.forEach(function(car, index) {
 	            let latLng = new google.maps.LatLng(car.value.latitude, car.value.longitude);
 	            let marker = createMarker(map, latLng, createGrabCarInfo(car), MARKER_GRABER);
+	            car.index = markers.length;
 	            markers.push(marker);
 	            vm.cars.push(car);
 	        });
@@ -219,8 +191,10 @@ function calculateDistanceFromPointToPoint(pointA, pointB) {
 function createGrabCarInfo(car) {
 	let res = "";
 	res += "<p>ID:&nbsp; " + car.value.carId + "-" + car.value.type + "</p>";
+	res += "<div class=\"text-center\">";
 	res += "<button type=\"button\" class=\"btn btn-success\" onclick=\"";
-	res += "mapGrabCarToCustomer(" + "'" + car.key + "'" + ")\">Chọn</button>";
+	res += "mapGrabCarToCustomer(" + "'" + car.key + "'" + ")\" style=\"width: 80%;\">Chọn</button>";
+	res += "</div>";
 	return res;
 }
 
@@ -270,6 +244,9 @@ function setSelected(ele) {
 	if(!requestCall(call.key)) {
 		alert('Cuộc gọi đã được thành viên khác tiếp nhận');
 		return;
+	}
+	else {
+		alert('Nhận cuộc gọi thành công');
 	}
 	var self = ele;
 	if(typeof selectedCallDiv !== 'undefined'){

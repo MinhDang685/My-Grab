@@ -60,6 +60,7 @@ namespace CallCenter
             MessageBox.Show("Gửi yêu cầu thành công !!!", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Error);
             ClearHistory();
             ResetTextboxForNewCall();
+            addressStatus = ConstantValue.UNLOCATED;
         }
 
         private void ClearHistory()

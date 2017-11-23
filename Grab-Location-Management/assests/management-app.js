@@ -184,7 +184,7 @@ var vm = new Vue({
 				case UNLOCATED:
 					return "Unlocated";
 				case FINDING_CAR:
-					return "Finding car";
+					return "Searching";
 				case NO_CAR:
 					return "No car";
 				case DONE:

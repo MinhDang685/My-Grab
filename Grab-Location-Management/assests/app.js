@@ -100,7 +100,7 @@ function addCarToGrabList(car) {
 	cars.push(car);
 }
 
-function createMarker(map, point, content, iconId) {
+function createMarker(map, point, content, iconId, infoList) {
     var iconPath = "http://maps.google.com/mapfiles/kml/shapes/heliport.png";
     if(typeof iconId !== 'undefined') {   
         iconPath = icons[iconId].icon;
@@ -111,13 +111,40 @@ function createMarker(map, point, content, iconId) {
             icon: iconPath
         });
     
+    marker.infowindow = new google.maps.InfoWindow();
+    marker.infowindow.setContent(content + "<br>" + marker.getPosition().toUrlValue(6));
+    google.maps.event.addListener(marker, "click", function(evt) {
+        if(typeof selectedInfoWindow !== 'undefined') {
+            selectedInfoWindow.close();
+        }
+        marker.infowindow.open(map, marker);
+        selectedInfoWindow = marker.infowindow;
+    });
+
+    return marker;
+}
+
+function createMarkerWithoutInfowindow(map, point, content, iconId) {
+    var iconPath = "http://maps.google.com/mapfiles/kml/shapes/heliport.png";
+    if(typeof iconId !== 'undefined') {   
+        iconPath = icons[iconId].icon;
+    }
+    var marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            icon: iconPath
+        });
+    
+    return marker;
+}
+
+function addInfoWindowToMarker(marker, map) {
     infowindow = new google.maps.InfoWindow();
     google.maps.event.addListener(marker, "click", function(evt) {
         infowindow.setContent(content + "<br>" + marker.getPosition().toUrlValue(6));
         infowindow.open(map, marker);
-        selectedInfoWindow = infowindow;
     });
-    return marker;
+    selectedInfoWindow = infowindow;
 }
 
 function setMapOnAll(markers, map) {

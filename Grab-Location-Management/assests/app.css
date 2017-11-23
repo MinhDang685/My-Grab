@@ -1,16 +1,16 @@
-.unlocated .list-group-item-heading.col-md-3{
-	color: White;
+.unlocated .list-group-item-heading.col-md-4{
+	color: Gray;
 }
 
-.finding .list-group-item-heading.col-md-3{
+.finding .list-group-item-heading.col-md-4{
 	color: Blue;
 }
 
-.no-car .list-group-item-heading.col-md-3{
-	color: Violet;
+.no-car .list-group-item-heading.col-md-4{
+	color: Red;
 }
 
-.done .list-group-item-heading.col-md-3{
+.done .list-group-item-heading.col-md-4{
 	color: LightSeaGreen;
 }
 

@@ -24,8 +24,8 @@
 							<div class="list-group" >
 							    <a href="#" onclick="setSelected(this)" class="list-group-item" v-bind:class="getStatusClass(call.value.Status)" :data-call="JSON.stringify(call)">
 								    <div style="width: 100%; display: inline-block;">
-								    	<h4 class="list-group-item-heading col-md-9 ">{{call.value.PhoneNumber}}</h4>
-								    	<h4 class="list-group-item-heading col-md-3 ">{{getStatusName(call.value.Status)}}</h4>	
+								    	<h4 class="list-group-item-heading col-md-8 ">{{call.value.PhoneNumber}}</h4>
+								    	<h4 class="list-group-item-heading col-md-4 ">{{getStatusName(call.value.Status)}}</h4>	
 								    </div>
 							    	<h5 style="color: orange" class="list-group-item-heading">{{formatDate(call.value.CallDate)}}</h5>
 								    <p class="list-group-item-text">
