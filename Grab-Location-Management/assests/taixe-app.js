@@ -1,19 +1,22 @@
 var currentLocation = { lat: 10.7626737, lng: 106.6834609 };
 var currentCarKey = "";
+var currentCallMatched = "";
 var isLogin = false;
 const GRABCAR = "GrabCars";
 
 
 $(function () {
 
-    $('#login').show();
-    $('#map').hide();
-
+    //loop 5s
     var interval = setInterval(function(){
         if(currentCarKey !== "")
             updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
     }, 5000);
 
+
+    // login
+    $('#login').show();
+    $('#map').hide();
 
     $('#Submit').on('click', function() {
         
@@ -25,7 +28,7 @@ $(function () {
 
         ref.orderByChild("username").equalTo(username).limitToFirst(1).on("child_added", function(snapshot) {
             var obj = snapshot.val();
-            console.log(obj);
+            
             if(obj.password == password) {
                 currentCarKey = snapshot.key;
                 isLogin = true;
@@ -33,8 +36,18 @@ $(function () {
                 toggleMap();
                 toggleLogin();
                 initMap();
+            } else {
+                $('#errorMessage').text("Username or Password not match");
             }
         });
+    });
+
+    //listen call assigned
+    let pathListen = GRABCAR+'/'+currentCarKey;
+    var refListen = firebase.database().ref(pathListen);
+
+    refListen.on('child_changed',function(data){
+        
     });
 
 })
