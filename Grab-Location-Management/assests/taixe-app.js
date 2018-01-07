@@ -4,6 +4,11 @@ var currentCallMatched = "";
 var currentCall;
 var isLogin = false;
 
+var directionsService;
+var directionsDisplay;
+var geocoder;
+
+
 const GRABCAR = "GrabCars";
 const CALL_HISTORY = "callHistory";
 
@@ -21,6 +26,15 @@ $(function () {
     $('#login').show();
     $('#map').hide();
     $('#verifyBox').hide();
+
+    $('#cancel').on('click', function() {
+        cancel();
+    });
+
+    $('#accept').on('click', function() {
+        toggleMessageBox();
+        accept();
+    });
 
     $('#Submit').on('click', function() {
         
@@ -55,16 +69,60 @@ $(function () {
         if(objChanged.match !== "" && objChanged.match !== currentCallMatched) {
             currentCallMatched = objChanged.match;
             
-            //get call detail
             getCallDetailByKey(currentCallMatched);
-            
-            //verify
-
+    
         }
     });
 
 });
 
+function cancel() {
+
+    let path = GRABCAR +'/'+ currentCarKey;
+    database.ref(path).update({
+        match: ""
+    })
+
+    toggleMessageBox();
+    currentCallMatched = "";
+    currentCall = null;
+}
+
+function accept() {
+
+    let path = CALL_HISTORY +'/' + currentCallMatched;
+    database.ref(path).update({
+        Status: 3
+    })
+
+    drawRoute(directionsService, directionsDisplay,geocoder);
+}
+
+function drawRoute(directionsService, directionsDisplay, geocoder) {
+
+    var start;
+
+    geocoder.geocode({'location': currentLocation}, function (results,status) {
+
+        if (status === 'OK') {
+            start = results[0].formatted_address;
+
+            directionsService.route({
+                origin: start,
+                destination: currentCall.Address,
+                travelMode: 'DRIVING'
+                }, function(response, status) {
+                  if (status === 'OK') {
+                    directionsDisplay.setDirections(response);
+                  } else {
+                    window.alert('Directions request failed due to ' + status);
+                  }
+            });
+        }
+
+    });
+
+}
 
 function getCallDetailByKey(key) {
     let pathCallHistory = CALL_HISTORY+'/'+currentCallMatched;
