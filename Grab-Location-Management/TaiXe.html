@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TaiXe App</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="assests/app.css">
+  </head>
+  <body>
+    <div style="background-color: #5BC0DE; padding: 2px 0px">
+    <h3 style="padding-left: 10px; color: white;">TaiXe</h3>
+  </div>
+    <div id="map"></div>
+    
+
+    <script type="text/javascript" src="assests/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="assests/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assests/vue.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApwSX1wDELvvTprWI-p1aALQwpfR-w_xQ&callback=initMap"
+    async defer>
+    </script>
+    <!-- <script type="text/javascript" src="assests/app.js"></script> -->
+    <script type="text/javascript" src="assests/taixe-app.js"></script>
+  </body>
+</html>
