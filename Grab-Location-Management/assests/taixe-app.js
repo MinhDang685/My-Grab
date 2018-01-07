@@ -35,7 +35,6 @@ $(function () {
     });
 
     $('#accept').on('click', function() {
-        toggleMessageBox();
         accept();
     });
 
@@ -44,6 +43,8 @@ $(function () {
             isStart = true;
             $('#startRun').text("Finish");
         } else {
+
+            $('#startRun').text("Start");
             $('#startRun').hide();
 
             let pathCar = GRABCAR +'/'+ currentCarKey;
@@ -58,8 +59,9 @@ $(function () {
 
             //set done
             currentCall = null;
-            // currentCallMatched = "";
+            currentCallMatched = "";
             isStart = false;
+            $('#verifyBox').hide();
         }
     });
 
@@ -123,7 +125,8 @@ function accept() {
     })
 
     drawRoute(directionsService, directionsDisplay,geocoder);
-
+    $('#verifyBox').hide();
+    $('#verifyBox').hide();
     $('#startRun').show();
 }
 
