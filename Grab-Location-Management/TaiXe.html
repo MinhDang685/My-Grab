@@ -15,20 +15,53 @@
         padding: 0;
       }
     </style>
+    <link rel="stylesheet" type="text/css" href="assests/bootstrap-3.3.7-dist/css/bootstrap.min.css"> 
     <link rel="stylesheet" type="text/css" href="assests/app.css">
   </head>
   <body>
     <div style="background-color: #5BC0DE; padding: 2px 0px">
     <h3 style="padding-left: 10px; color: white;">TaiXe</h3>
   </div>
+    
+    <!-- notify -->
+    <div id="verifyBox">
+
+      <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-sm-12" style="text-align: center;">
+            <span id="addressInfo"></span>
+          </div>
+
+          <div class="col-sm-12" style="text-align: center; color: red;">
+            <h4>
+              <span id="timeRemain">5</span>
+            </h4>
+          </div>
+
+          <div class="col-sm-12" style="display: inline; text-align: center;">
+              <div >
+                <button class="btn btn-info" id="accept">ACCEPT</button>
+                <button id="cancel">CANCEL</button>
+              </div>
+          </div>
+
+        </div>
+
+      </div>
+  </div>
+  <!-- notify -->
 
     <div id="map"></div>
 
+    <!-- login -->
     <div id="login">
       <br>
     <div class="container-fluid">
       <div class="row">
-
+        <div class="col-sm-12" style="text-align: center;">
+          <h4 style="color: #5BC0DE">LOGIN</h4>
+        </div>
         <div class="col-sm-12">
             <div class="form-group">
             <input class="form-control" placeholder="Username" id="username" type="text" style="width: 100%">
@@ -38,10 +71,10 @@
             <input class="form-control" placeholder="Password" id="password" type="password" style="width: 100%">
           </div>
           <br>
-          <div class="form-group">
-            <button class="form-control" id="Submit">Login</button>
+          <div class="form-group" style="text-align: center;">
+            <button type="button" class="btn btn-primary" id="Submit">Login</button>
           </div>
-          <div class="form-group">
+          <div class="form-group" style="text-align: center;">
             <span id="errorMessage" style="color: red;"></span>
           </div>
 
@@ -49,6 +82,7 @@
       </div>
     </div>
     </div>
+    <!-- login -->
 
     <script type="text/javascript" src="assests/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="assests/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>

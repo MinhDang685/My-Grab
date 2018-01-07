@@ -1,8 +1,11 @@
 var currentLocation = { lat: 10.7626737, lng: 106.6834609 };
 var currentCarKey = "";
 var currentCallMatched = "";
+var currentCall;
 var isLogin = false;
+
 const GRABCAR = "GrabCars";
+const CALL_HISTORY = "callHistory";
 
 
 $(function () {
@@ -17,6 +20,7 @@ $(function () {
     // login
     $('#login').show();
     $('#map').hide();
+    $('#verifyBox').hide();
 
     $('#Submit').on('click', function() {
         
@@ -47,10 +51,39 @@ $(function () {
     var refListen = firebase.database().ref(pathListen);
 
     refListen.on('child_changed',function(data){
-        
+        var objChanged = data.val();
+        if(objChanged.match !== "" && objChanged.match !== currentCallMatched) {
+            currentCallMatched = objChanged.match;
+            
+            //get call detail
+            getCallDetailByKey(currentCallMatched);
+            
+            //verify
+
+        }
     });
 
-})
+});
+
+
+function getCallDetailByKey(key) {
+    let pathCallHistory = CALL_HISTORY+'/'+currentCallMatched;
+    var refCallHistory = firebase.database().ref(pathCallHistory);
+
+    refCallHistory.on('value', function(data) {
+        var result = data.val();
+        currentCall = result;
+
+        toggleMessageBox();
+        $('#addressInfo').text(result.Address);
+
+    });
+}
+
+
+function toggleMessageBox() {
+    $('#verifyBox').toggle();
+}
 
 function toggleMap() {
     $('#map').toggle();
