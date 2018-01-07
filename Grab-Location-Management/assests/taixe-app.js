@@ -1,15 +1,51 @@
 var currentLocation = { lat: 10.7626737, lng: 106.6834609 };
-var currentCarKey = "-L2EDUEvdfWlklHoJdls";
+var currentCarKey = "";
+var isLogin = false;
 const GRABCAR = "GrabCars";
+
 
 $(function () {
 
+    $('#login').show();
+    $('#map').hide();
+
     var interval = setInterval(function(){
-        console.log(currentLocation.lat + '  ' + currentLocation.lng);
-        updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
+        if(currentCarKey !== "")
+            updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
     }, 5000);
 
+
+    $('#Submit').on('click', function() {
+        
+        let path = GRABCAR;
+        var ref = firebase.database().ref(path);
+
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+        ref.orderByChild("username").equalTo(username).limitToFirst(1).on("child_added", function(snapshot) {
+            var obj = snapshot.val();
+            console.log(obj);
+            if(obj.password == password) {
+                currentCarKey = snapshot.key;
+                isLogin = true;
+
+                toggleMap();
+                toggleLogin();
+                initMap();
+            }
+        });
+    });
+
 })
+
+function toggleMap() {
+    $('#map').toggle();
+}
+
+function toggleLogin() {
+    $('#login').toggle();
+}
 
 function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -25,7 +61,6 @@ function initMap() {
     google.maps.event.addListener(map, "click", function (e) {
 
         currentLocation = { lat: e.latLng.lat(), lng: e.latLng.lng()};
-        // alert(currentLocation);
 
     });
 
@@ -54,3 +89,4 @@ function updateCarLocation(carKey, lat, lng) {
         longitude: lng
     })
 }
+
