@@ -4,6 +4,8 @@ var currentCallMatched = "";
 var currentCall;
 var isLogin = false;
 
+var isStart = false;
+
 var directionsService;
 var directionsDisplay;
 var geocoder;
@@ -26,6 +28,7 @@ $(function () {
     $('#login').show();
     $('#map').hide();
     $('#verifyBox').hide();
+    $('#startRun').hide();
 
     $('#cancel').on('click', function() {
         cancel();
@@ -34,6 +37,30 @@ $(function () {
     $('#accept').on('click', function() {
         toggleMessageBox();
         accept();
+    });
+
+    $('#startRun').on('click', function() {
+        if(isStart == false) {
+            isStart = true;
+            $('#startRun').text("Finish");
+        } else {
+            $('#startRun').hide();
+
+            let pathCar = GRABCAR +'/'+ currentCarKey;
+            database.ref(pathCar).update({
+                match: ""
+            })
+
+            let pathCall = CALL_HISTORY +'/' + currentCallMatched;
+            database.ref(pathCall).update({
+                Status: 4
+            })
+
+            //set done
+            currentCall = null;
+            // currentCallMatched = "";
+            isStart = false;
+        }
     });
 
     $('#Submit').on('click', function() {
@@ -96,6 +123,8 @@ function accept() {
     })
 
     drawRoute(directionsService, directionsDisplay,geocoder);
+
+    $('#startRun').show();
 }
 
 function drawRoute(directionsService, directionsDisplay, geocoder) {
