@@ -104,12 +104,12 @@ exports.resetGrabCarState = functions.database.ref(GRABCAR + "/{carID}")
         }
         console.log(`Reset car ${car.carId}'s state after 120s`);
         setTimeout(() => {
-            updateCarState(event.data.ref, car);
+            setCarState(event.data.ref, car);
         }, 10000);
         return true;
 });
 
-var updateCarState = function(carRef, car) {
+var setCarState = function(carRef, car) {
     //set call state = complete
     let callRef = admin.database().ref(CALL_HISTORY + `/${car.match}`);
     let updateCallDb = callRef.update({
@@ -161,3 +161,43 @@ exports.getCarByCallId = functions.https.onRequest((request, response) => {
     });
 });
 
+exports.getCarByUsername = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let username = request.query.username;
+        let ref = admin.database().ref(GRABCAR);
+        return ref.once('value').then(snapshot => {
+            snapshot.forEach(function(car, index){
+                if(car.val().username === username) {
+                    response.status(200).json(car).end();
+                }
+            });
+            response.status(200).json("").end();
+        });
+    });
+});
+
+exports.getCallById = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let callId = request.query.key;
+        let ref = admin.database().ref(CALL_HISTORY + `/${callId}`);
+        return ref.once('value').then(snapshot => {
+            response.status(200).json(snapshot).end();
+        });
+        response.status(200).json("").end();
+    });
+});
+
+exports.setCarInfo = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let carId = request.body.carId;
+        let carInfo = request.body.carInfo;
+        let carRef = admin.database().ref(GRABCAR + `/${carId}`);
+        carRef.update({
+            carInfo
+        }).then(function(){
+            console.log(`Car Id = ${carId} has been updated`);
+            response.status(200).json("success").end();
+        });
+        response.status(404).end();
+    });
+});
