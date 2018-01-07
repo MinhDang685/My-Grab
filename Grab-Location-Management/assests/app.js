@@ -88,10 +88,13 @@ function parseCarTypeId(index) {
 function buildCar(grabCarId, lat, lng, type) {
 	var car = {
 		carId: grabCarId,
+        username: "Driver_" + grabCarId,
+        password: "123",
 		match: "",
 		latitude: lat,
 		longitude: lng,
 		type: type,
+        request: ""
 	};
 	return car;
 }
