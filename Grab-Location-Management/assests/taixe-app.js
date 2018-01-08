@@ -39,7 +39,7 @@ $(function () {
     });
 
     $('#startRun').on('click', function() {
-        if(isStart == false) {
+        if(isStart === false) {
             isStart = true;
             $('#startRun').text("Finish");
         } else {
@@ -112,7 +112,14 @@ function cancel() {
         match: ""
     })
 
-    toggleMessageBox();
+    let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
+    database.ref(pathCall).update({
+        request: "reject"
+    })
+
+    // toggleMessageBox();
+    $('#verifyBox').hide();
+    $('#verifyBox').hide();
     currentCallMatched = "";
     currentCall = null;
 }
@@ -121,7 +128,8 @@ function accept() {
 
     let path = CALL_HISTORY +'/' + currentCallMatched;
     database.ref(path).update({
-        Status: 3
+        Status: 3,
+        request: "ok"
     })
 
     drawRoute(directionsService, directionsDisplay,geocoder);
@@ -166,6 +174,8 @@ function getCallDetailByKey(key) {
 
         toggleMessageBox();
         $('#addressInfo').text(result.Address);
+
+
 
     });
 }
