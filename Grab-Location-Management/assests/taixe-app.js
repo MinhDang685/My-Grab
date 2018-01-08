@@ -17,13 +17,6 @@ const CALL_HISTORY = "callHistory";
 
 $(function () {
 
-    //loop 5s
-    // var interval = setInterval(function(){
-    //     if(currentCarKey !== "")
-    //         updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
-    // }, 5000);
-
-
     // login
     $('#login').show();
     $('#map').hide();
@@ -53,11 +46,6 @@ $(function () {
             database.ref(pathCar).update({
                 request: ""
             })
-
-            // let pathCall = CALL_HISTORY +'/' + currentCallMatched;
-            // database.ref(pathCall).update({
-            //     Status: 4
-            // })
 
             //set done
             currentCall = null;
@@ -114,11 +102,6 @@ function cancel() {
         request: "reject"
     })
 
-    // let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
-    // database.ref(pathCall).update({
-    //     request: "reject"
-    // })
-
     // toggleMessageBox();
     $('#verifyBox').hide();
     $('#verifyBox').hide();
@@ -127,11 +110,6 @@ function cancel() {
 }
 
 function accept() {
-
-    // let path = CALL_HISTORY +'/' + currentCallMatched;
-    // database.ref(path).update({
-    //     request: "ok"
-    // })
 
     let path = GRABCAR +'/'+ currentCarKey;
     database.ref(path).update({
