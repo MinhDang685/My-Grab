@@ -160,12 +160,12 @@ function getCallDetailByKey(key) {
         $('#addressInfo').text(result.Address);
 
         var time = 5;
-        
+
         var interval = setInterval(function () {
             $('#timeRemain').text(time);
             time--;
 
-            if(time === 0){
+            if($('#timeRemain').text() === '0'){
                 clearInterval(interval);
                 cancel();
                 isProcess = true;
