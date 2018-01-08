@@ -3,7 +3,7 @@ var currentCarKey = "";
 var currentCallMatched = "";
 var currentCall;
 var isLogin = false;
-
+var isProcess = false;
 var isStart = false;
 
 var directionsService;
@@ -18,10 +18,10 @@ const CALL_HISTORY = "callHistory";
 $(function () {
 
     //loop 5s
-    var interval = setInterval(function(){
-        if(currentCarKey !== "")
-            updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
-    }, 5000);
+    // var interval = setInterval(function(){
+    //     if(currentCarKey !== "")
+    //         updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
+    // }, 5000);
 
 
     // login
@@ -31,10 +31,12 @@ $(function () {
     $('#startRun').hide();
 
     $('#cancel').on('click', function() {
+        isProcess = true;
         cancel();
     });
 
     $('#accept').on('click', function() {
+        isProcess = true;
         accept();
     });
 
@@ -49,13 +51,13 @@ $(function () {
 
             let pathCar = GRABCAR +'/'+ currentCarKey;
             database.ref(pathCar).update({
-                match: ""
+                request: ""
             })
 
-            let pathCall = CALL_HISTORY +'/' + currentCallMatched;
-            database.ref(pathCall).update({
-                Status: 4
-            })
+            // let pathCall = CALL_HISTORY +'/' + currentCallMatched;
+            // database.ref(pathCall).update({
+            //     Status: 4
+            // })
 
             //set done
             currentCall = null;
@@ -95,8 +97,8 @@ $(function () {
 
     refListen.on('child_changed',function(data){
         var objChanged = data.val();
-        if(objChanged.match !== "" && objChanged.match !== currentCallMatched) {
-            currentCallMatched = objChanged.match;
+        if(objChanged.request !== "" && objChanged.request !== "ok" && objChanged.request !== "reject" && objChanged.request !== currentCallMatched) {
+            currentCallMatched = objChanged.request;
             
             getCallDetailByKey(currentCallMatched);
     
@@ -109,13 +111,13 @@ function cancel() {
 
     let path = GRABCAR +'/'+ currentCarKey;
     database.ref(path).update({
-        match: ""
-    })
-
-    let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
-    database.ref(pathCall).update({
         request: "reject"
     })
+
+    // let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
+    // database.ref(pathCall).update({
+    //     request: "reject"
+    // })
 
     // toggleMessageBox();
     $('#verifyBox').hide();
@@ -126,9 +128,13 @@ function cancel() {
 
 function accept() {
 
-    let path = CALL_HISTORY +'/' + currentCallMatched;
+    // let path = CALL_HISTORY +'/' + currentCallMatched;
+    // database.ref(path).update({
+    //     request: "ok"
+    // })
+
+    let path = GRABCAR +'/'+ currentCarKey;
     database.ref(path).update({
-        Status: 3,
         request: "ok"
     })
 
@@ -175,8 +181,6 @@ function getCallDetailByKey(key) {
         toggleMessageBox();
         $('#addressInfo').text(result.Address);
 
-
-
     });
 }
 
@@ -207,6 +211,8 @@ function initMap() {
     google.maps.event.addListener(map, "click", function (e) {
 
         currentLocation = { lat: e.latLng.lat(), lng: e.latLng.lng()};
+        if(currentCarKey !== "")
+            updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
 
     });
 
