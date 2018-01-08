@@ -159,6 +159,23 @@ function getCallDetailByKey(key) {
         toggleMessageBox();
         $('#addressInfo').text(result.Address);
 
+        var time = 5;
+        
+        var interval = setInterval(function () {
+            $('#timeRemain').text(time);
+            time--;
+
+            if(time === 0){
+                clearInterval(interval);
+                cancel();
+                isProcess = true;
+            }
+
+            if(isProcess === true) {
+                clearInterval(interval);
+            }
+        },1000);
+
     });
 }
 
