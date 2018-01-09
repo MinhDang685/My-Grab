@@ -161,24 +161,34 @@ function getCallDetailByKey(key) {
         toggleMessageBox();
         $('#addressInfo').text(result.Address);
 
+        countDown();
+
+    });
+}
+
+function countDown() {
+    
         var time = 5;
 
         var interval = setInterval(function () {
-            $('#timeRemain').text(time);
-            time--;
+
+            if(time >= 0){
+                $('#timeRemain').text(time);
+                console.log(time);
+                time--;
+            }
 
             if($('#timeRemain').text() === '0'){
-                clearInterval(interval);
+                // clearInterval(interval);
                 cancel();
+                $('#timeRemain').text('5');
                 isProcess = true;
             }
 
-            if(isProcess === true) {
-                clearInterval(interval);
-            }
+            // if(isProcess === true) {
+            //     // clearInterval(interval);
+            // }
         },1000);
-
-    });
 }
 
 
