@@ -50,11 +50,20 @@ function searchGeocode(address) {
 }
 
 function showResultsOnMap(results) {
-	results.forEach(function (point, index) {
-    	let content = createCustomerMarkerInfoLocating(results[index], index);
+	//show only first result
+	/*results.forEach(function (point, index) {
+    	let content = createCustomerMarkerInfo(results[index], index);
     	let marker = createMarker(locatingMap, results[index].geometry.location, content, MARKER_CUSTOMER);
+    	marker.infowindow.open(locatingMap, marker);
 		markers.push(marker);
-    });
+    });*/
+ 	if(results.length === 0){
+ 		alert("Không tìm thấy địa điểm");
+ 	}
+    let content = createCustomerMarkerInfo(results[0], 0);
+	let marker = createMarker(locatingMap, results[0].geometry.location, content, MARKER_CUSTOMER);
+	marker.infowindow.open(locatingMap, marker);
+	markers.push(marker);
     locatingMap.setCenter(results[0].geometry.location);
 }
 
@@ -73,7 +82,7 @@ function setCenterToThisPoint(ele) {
 	markers[car.index].infowindow.open(locatingMap, markers[car.index]);
 }
 
-function createCustomerMarkerInfoLocating(point, index) {
+function createCustomerMarkerInfo(point, index) {
 	procededAddress = point.formatted_address;
 	let res = "";
 	res += "<p>"+ point.formatted_address +"</p>";
@@ -193,25 +202,54 @@ function createGrabCarInfo(car) {
 	res += "<p>ID:&nbsp; " + car.value.carId + "-" + car.value.type + "</p>";
 	res += "<div class=\"text-center\">";
 	res += "<button type=\"button\" class=\"btn btn-success\" onclick=\"";
-	res += "mapGrabCarToCustomer(" + "'" + car.key + "'" + ")\" style=\"width: 80%;\">Chọn</button>";
+	res += "mapCarToCustomer(" + "'" + car.key + "'" + ")\" style=\"width: 80%;\">Chọn</button>";
 	res += "</div>";
 	return res;
 }
 
-function mapGrabCarToCustomer(carKey) {
+function sendRequestToCar(callId, carId){
+	$.ajax({
+	    url: `${api.sendRequestToCar}?carId=${carId}&callId=${callId}`,
+	    dataType: 'json',
+	    success: function(data) {
+	        if(data === '') {}
+	        else {
+	        	//đang chờ phản hồi
+	        }
+	    },
+	    type: 'GET'
+	});
+}
+
+function mapCarToCustomer(carKey) {
 	let carPath = GRABCAR + "/" + carKey;
 	let carRef = database.ref(carPath);
 	carRef.update({
 		match: selectedCall.key,
+		request: ''
 	});
-
 	let callPath = CALL_HISTORY + "/" + selectedCall.key;
 	let callRef = database.ref(callPath);
 	callRef.update({
 		Status: DONE,
 	});
+	var car = null;
+	$.ajax({
+	    url: `${api.getCarById}?key=${carKey}`,
+	    dataType: 'json',
+	    success: function(data) {
+	        if(data === '') {}
+	        else {
+	        	car = data;
+	        }
+	    },
+	    type: 'GET'
+	});
+
 	removeClickListener();
-	alert(`Đặt xe thành công cho cuộc gọi ${selectedCall.value.PhoneNumber}`);
+	alert(`Đặt xe thành công:
+		\n${selectedCall.value.PhoneNumber} - ${selectedCall.value.Name}
+		\nXe: ${car.carId} - Tài xế: ${car.username}`);
 	$("#button-reset-customer-address").click();
 }
 
@@ -289,6 +327,9 @@ function resetCustomerAddress() {
 	setMapOnAll(markers, null);
 	markers=[];
 	vm.cars = [];
+	if(clickListener === null) {
+		addClickListener();
+	}
 }
 
 function initMapLocatingApp() {
@@ -317,7 +358,7 @@ function addClickListener() {
 			if (status === 'OK') {
 				let point = results[0];
             	if (point) {
-            		// let content = createCustomerMarkerInfoLocating(point, getMarkersLength());
+            		// let content = createCustomerMarkerInfo(point, getMarkersLength());
             		// let marker = createMarker(locatingMap, latLng, content, MARKER_CUSTOMER);
             		// markers.push(marker);
             		// selectedPointMarker = marker;
@@ -329,10 +370,12 @@ function addClickListener() {
 }
 
 function createPointMarker(point) {
-	let content = createCustomerMarkerInfoLocating(point, getMarkersLength());
+	let content = createCustomerMarkerInfo(point, getMarkersLength());
 	let marker = createMarker(locatingMap, point.geometry.location, content, MARKER_CUSTOMER);
+	marker.infowindow.open(locatingMap, marker);
 	markers.push(marker);
 	selectedPointMarker = marker;
+
 }
 
 function removeClickListener() {

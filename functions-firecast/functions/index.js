@@ -176,6 +176,17 @@ exports.getCarByUsername = functions.https.onRequest((request, response) => {
     });
 });
 
+exports.getCarById = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let key = request.query.id;
+        let ref = admin.database().ref(GRABCAR + `/${key}`);
+        return ref.once('value').then(snapshot => {
+            response.status(200).json(snapshot).end();
+        });
+        response.status(200).json("").end();
+    });
+});
+
 exports.getCallById = functions.https.onRequest((request, response) => {
     cors(request, response, () => {
         let callId = request.query.key;
@@ -192,10 +203,28 @@ exports.setCarInfo = functions.https.onRequest((request, response) => {
         let carId = request.body.carId;
         let carInfo = request.body.carInfo;
         let carRef = admin.database().ref(GRABCAR + `/${carId}`);
-        carRef.update({
+        return carRef.update({
             carInfo
         }).then(function(){
             console.log(`Car Id = ${carId} has been updated`);
+            response.status(200).json("success").end();
+        });
+        response.status(404).end();
+    });
+});
+
+exports.sendRequestToCar = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let carId = request.query.carId;
+        let callId = request.query.callId;
+        let carInfo = {
+            request: callId,
+        };
+        let carRef = admin.database().ref(GRABCAR + `/${carId}`);
+        return carRef.update({
+            carInfo
+        }).then(function(){
+            console.log(`Car Id = ${carId} has been request for call Id = ${callId}`);
             response.status(200).json("success").end();
         });
         response.status(404).end();

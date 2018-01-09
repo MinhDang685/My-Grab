@@ -21,6 +21,10 @@ var icons = {
         icon: './assests/icon/marker-start.png'
     },
 };
+var api = {
+    getCarById: 'https://us-central1-my-grab.cloudfunctions.net/getCarById',
+    sendRequestToCar: 'https://us-central1-my-grab.cloudfunctions.net/sendRequestToCar',
+};
 var searchRanges = [500, 1000, 10000];
 var cityCenter = {lat: 10.8043382, lng: 106.6565154};
 
@@ -114,8 +118,15 @@ function createMarker(map, point, content, iconId, infoList) {
             icon: iconPath
         });
     
+    if(typeof selectedInfoWindow !== 'undefined') {
+            selectedInfoWindow.close();
+        }
     marker.infowindow = new google.maps.InfoWindow();
+    selectedInfoWindow = marker.infowindow;
     marker.infowindow.setContent(content + "<br>" + marker.getPosition().toUrlValue(6));
+    if(typeof selectedInfoWindow !== 'undefined') {
+            selectedInfoWindow.close();
+        }
     google.maps.event.addListener(marker, "click", function(evt) {
         if(typeof selectedInfoWindow !== 'undefined') {
             selectedInfoWindow.close();
@@ -123,7 +134,6 @@ function createMarker(map, point, content, iconId, infoList) {
         marker.infowindow.open(map, marker);
         selectedInfoWindow = marker.infowindow;
     });
-
     return marker;
 }
 
