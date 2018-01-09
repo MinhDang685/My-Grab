@@ -86,9 +86,11 @@ $(function () {
     refListen.on('child_changed',function(data){
         var objChanged = data.val();
         if(objChanged.request !== "" && objChanged.request !== "ok" && objChanged.request !== "reject" && objChanged.request !== currentCallMatched) {
-            currentCallMatched = objChanged.request;
             
-            getCallDetailByKey(currentCallMatched);
+            if(isLogin && data.key == currentCarKey){
+                currentCallMatched = objChanged.request;
+                getCallDetailByKey(currentCallMatched);
+            }
     
         }
     });
