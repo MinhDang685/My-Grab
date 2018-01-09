@@ -9,7 +9,11 @@ var isStart = false;
 var directionsService;
 var directionsDisplay;
 var geocoder;
+var desMaker;
 
+var  desIcon = {
+        icon: './assests/icon/marker-dest.png'
+    }
 
 const GRABCAR = "GrabCars";
 const CALL_HISTORY = "callHistory";
@@ -119,6 +123,8 @@ function accept() {
     })
 
     drawRoute(directionsService, directionsDisplay,geocoder);
+    drawDesMaker(geocoder);
+
     $('#verifyBox').hide();
     $('#verifyBox').hide();
     $('#startRun').show();
@@ -147,6 +153,20 @@ function drawRoute(directionsService, directionsDisplay, geocoder) {
         }
 
     });
+
+}
+
+function drawDesMaker(geocoder) {
+
+    geocoder.geocode( { 'address': currentCall.Address}, function(results, status) {
+
+    if (status == google.maps.GeocoderStatus.OK) {
+        var latitude = results[0].geometry.location.lat();
+        var longitude = results[0].geometry.location.lng();
+        desLocation = { lat: latitude, lng: longitude};
+        desMaker.setPosition(desLocation);
+        } 
+    }); 
 
 }
 
@@ -231,6 +251,11 @@ function initMap() {
           position: currentLocation,
           map: map
         });
+
+    desMaker = new google.maps.Marker({
+        map:map,
+        icon:desIcon.icon
+    });
 
 
     google.maps.event.addListener(map, "click", function (e) {
