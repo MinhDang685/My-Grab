@@ -9,7 +9,11 @@ var isStart = false;
 var directionsService;
 var directionsDisplay;
 var geocoder;
+var desMaker;
 
+var  desIcon = {
+        icon: './assests/icon/marker-dest.png'
+    }
 
 const GRABCAR = "GrabCars";
 const CALL_HISTORY = "callHistory";
@@ -119,6 +123,8 @@ function accept() {
     })
 
     drawRoute(directionsService, directionsDisplay,geocoder);
+    drawDesMaker(geocoder);
+
     $('#verifyBox').hide();
     $('#verifyBox').hide();
     $('#startRun').show();
@@ -150,6 +156,20 @@ function drawRoute(directionsService, directionsDisplay, geocoder) {
 
 }
 
+function drawDesMaker(geocoder) {
+
+    geocoder.geocode( { 'address': currentCall.Address}, function(results, status) {
+
+    if (status == google.maps.GeocoderStatus.OK) {
+        var latitude = results[0].geometry.location.lat();
+        var longitude = results[0].geometry.location.lng();
+        desLocation = { lat: latitude, lng: longitude};
+        desMaker.setPosition(desLocation);
+        } 
+    }); 
+
+}
+
 function getCallDetailByKey(key) {
     let pathCallHistory = CALL_HISTORY+'/'+currentCallMatched;
     var refCallHistory = firebase.database().ref(pathCallHistory);
@@ -160,25 +180,48 @@ function getCallDetailByKey(key) {
 
         toggleMessageBox();
         $('#addressInfo').text(result.Address);
+        countDown();
+
+    });
+}
+
+function countDown() {
 
         var time = 5;
 
         var interval = setInterval(function () {
-            $('#timeRemain').text(time);
-            time--;
+
+            if(time >= 0){
+                $('#timeRemain').text(time);
+                time--;
+            }
 
             if($('#timeRemain').text() === '0'){
-                clearInterval(interval);
-                cancel();
+                // clearInterval(interval);
+
+                // cancel();
+
+                if(isProcess === false){
+                    let path = GRABCAR +'/'+ currentCarKey;
+                    database.ref(path).update({
+                        request: "reject"
+                    })
+                }
+                
+                // toggleMessageBox();
+                $('#verifyBox').hide();
+                $('#verifyBox').hide();
+                currentCallMatched = "";
+                currentCall = null;
+
+                $('#timeRemain').text('5');
                 isProcess = true;
             }
 
-            if(isProcess === true) {
-                clearInterval(interval);
-            }
+            // if(isProcess === true) {
+            //     // clearInterval(interval);
+            // }
         },1000);
-
-    });
 }
 
 
@@ -204,13 +247,23 @@ function initMap() {
     directionsService = new google.maps.DirectionsService;
     directionsDisplay = new google.maps.DirectionsRenderer; 
     directionsDisplay.suppressMarkers = false;
+    var marker = new google.maps.Marker({
+          position: currentLocation,
+          map: map
+        });
+
+    desMaker = new google.maps.Marker({
+        map:map,
+        icon:desIcon.icon
+    });
+
 
     google.maps.event.addListener(map, "click", function (e) {
 
         currentLocation = { lat: e.latLng.lat(), lng: e.latLng.lng()};
         if(currentCarKey !== "")
             updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
-
+            marker.setPosition(currentLocation);
     });
 
     directionsDisplay.setMap(map);
