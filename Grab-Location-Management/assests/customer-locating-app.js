@@ -18,7 +18,9 @@ $(function () {
 	});
 	$('#button-geocode-search').click(function() {
 		let inputAddress = $('#input-address').val();
-		searchGeocode(inputAddress);
+		searchGeocode(inputAddress).then(function(results){
+			showResultsOnMap(results);
+		})
 	})
 })
 
@@ -35,18 +37,21 @@ function searchGeocode(address) {
 		address: address,
 		bounds: bounds
 	};
+	var deferred = $.Deferred();
 	geocoder.geocode(searchObject, 
 		function(results, status) {
 	    if (status === 'OK') {
 	        if(results === null) {
 	        	alert("Address not found");
-	        	return;
+	        	deferred.resolve(null);
 	        }
-	        showResultsOnMap(results);
+	        deferred.resolve(results);
 	    } else {
 	        console.log('Geocode was not successful for the following reason: ' + status);
+	        deferred.reject(status);
 	    }
 	});
+	return deferred.promise();
 }
 
 function showResultsOnMap(results) {
@@ -87,7 +92,7 @@ function createCustomerMarkerInfo(point, index) {
 	let res = "";
 	res += "<p>"+ point.formatted_address +"</p>";
 	res += "<div class=\"text-center div-find-car\">";
-	res += "<button type=\"button\" class=\"btn btn-success\" onclick=\"";
+	res += "<button type=\"button\" class=\"btn btn-success located-customer\" onclick=\"";
 	res += "findGrabCar(" + index + "," + point.geometry.location.lat() + "," + point.geometry.location.lng() + ")\">";
 	res += "Lưu và bắt đầu tìm xe</button>";
 	res += "</div>";
@@ -352,7 +357,10 @@ function setSelected(ele) {
 	selectedCall = call;
 
 	if (selectedCall.value.Status === FINDING_CAR) {
-		searchGeocode(selectedCall.value.Address);
+		searchGeocode(selectedCall.value.Address).then(function(results){
+			showResultsOnMap(results);
+			$('.located-customer').click();
+		})
 	}
 	else {
 		$('#input-address').val(call.value.InputAddress);
@@ -422,7 +430,7 @@ function addClickListener() {
             	}
             }
 		});
-	});
+	})
 }
 
 function createPointMarker(point) {
