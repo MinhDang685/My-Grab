@@ -23,7 +23,11 @@ var icons = {
 };
 var api = {
     getCarById: 'https://us-central1-my-grab.cloudfunctions.net/getCarById',
+    setCarInfo: 'https://us-central1-my-grab.cloudfunctions.net/setCarInfo',
     sendRequestToCar: 'https://us-central1-my-grab.cloudfunctions.net/sendRequestToCar',
+    requestCall: 'https://us-central1-my-grab.cloudfunctions.net/requestCall',
+    getGrabCarsNearThere: 'https://us-central1-my-grab.cloudfunctions.net/getGrabCarsNearThere',
+    getCarByCallId: 'https://us-central1-my-grab.cloudfunctions.net/getCarByCallId',
 };
 var searchRanges = [500, 1000, 10000];
 var cityCenter = {lat: 10.8043382, lng: 106.6565154};
@@ -118,9 +122,6 @@ function createMarker(map, point, content, iconId, infoList) {
             icon: iconPath
         });
     
-    if(typeof selectedInfoWindow !== 'undefined') {
-            selectedInfoWindow.close();
-        }
     marker.infowindow = new google.maps.InfoWindow();
     selectedInfoWindow = marker.infowindow;
     marker.infowindow.setContent(content + "<br>" + marker.getPosition().toUrlValue(6));

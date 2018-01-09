@@ -129,7 +129,7 @@ function showAvailableCars(map, center) {
 	infowindows = [];
 	vm.cars = [];
 
-	let url = `https://us-central1-my-grab.cloudfunctions.net/getGrabCarsNearThere`;
+	let url = `${api.getGrabCarsNearThere}`;
 	url += `?lat=${center.lat()}&lng=${center.lng()}&type=${vm.getCallCarType(selectedCall.value.Type)}`;
 
 	$.ajax({
@@ -200,28 +200,84 @@ function calculateDistanceFromPointToPoint(pointA, pointB) {
 function createGrabCarInfo(car) {
 	let res = "";
 	res += "<p>ID:&nbsp; " + car.value.carId + "-" + car.value.type + "</p>";
-	res += "<div class=\"text-center\">";
+	res += "<div class=\"text-center\" id=\""+ car.key + "\">";
 	res += "<button type=\"button\" class=\"btn btn-success\" onclick=\"";
-	res += "mapCarToCustomer(" + "'" + car.key + "'" + ")\" style=\"width: 80%;\">Chọn</button>";
+	res += "sendRequestToCar(" + "'" + selectedCall.key + "'" + ',' + "'" + car.key + "'" + ")\" style=\"width: 80%;\">Gửi yêu cầu</button>";
 	res += "</div>";
 	return res;
 }
 
 function sendRequestToCar(callId, carId){
+	let requestState;
+	let carInfo;
 	$.ajax({
 	    url: `${api.sendRequestToCar}?carId=${carId}&callId=${callId}`,
 	    dataType: 'json',
 	    success: function(data) {
 	        if(data === '') {}
 	        else {
-	        	//đang chờ phản hồi
+	        	//chờ phản hồi
+	        	setTimeout(function(){
+	        		getCarField(carId).then(function(data){
+	        			carInfo = data;
+	        			requestState = carInfo.request;
+			        	if(requestState === 'ok') {
+			        		//đặt xe thành công
+			        		mapCarToCustomer(carId, carInfo);	
+			        	}
+			        	else if(requestState === 'reject'){
+			        		alert(`Xe ${carInfo.carId} từ chối`);
+			        	}
+			        	else {
+			        		alert(`Xe ${carInfo.carId} không phản hồi`);
+			        	}
+			        	setCarField(carId, carInfo, 'request', '');
+	        		});
+		        	
+	        	}, 5000);
+	        	
+	        	
 	        }
 	    },
 	    type: 'GET'
 	});
 }
 
-function mapCarToCustomer(carKey) {
+function getCarField(carId, field) {
+	return $.ajax({
+	    url: `${api.getCarById}?id=${carId}`,
+	    dataType: 'json',
+	    success: function(data) {
+	        if(data === '') {}
+	        else {
+	        	if(typeof field !== 'undefined')
+	        		return data.field;
+	        	return data;
+	        }
+	    },
+	    type: 'GET'
+	});
+}
+
+function setCarField(carId, carInfo, field, value){
+	carInfo[field] = value;
+	$.ajax({
+	    url: `${api.setCarInfo}`,
+	    dataType: 'json',
+	    data: {
+	    	carId,
+	    	carInfo
+	    },
+	    success: function(data) {
+	        if(data === 'success') {
+	        	
+	        }
+	    },
+	    type: 'POST'
+	});
+}
+
+function mapCarToCustomer(carKey, carInfo) {
 	let carPath = GRABCAR + "/" + carKey;
 	let carRef = database.ref(carPath);
 	carRef.update({
@@ -233,22 +289,22 @@ function mapCarToCustomer(carKey) {
 	callRef.update({
 		Status: DONE,
 	});
-	var car = null;
-	$.ajax({
-	    url: `${api.getCarById}?key=${carKey}`,
-	    dataType: 'json',
-	    success: function(data) {
-	        if(data === '') {}
-	        else {
-	        	car = data;
-	        }
-	    },
-	    type: 'GET'
-	});
+	var car = carInfo;
+	// $.ajax({
+	//     url: `${api.getCarById}?id=${carKey}`,
+	//     dataType: 'json',
+	//     success: function(data) {
+	//         if(data === '') {}
+	//         else {
+	//         	car = data;
+	//         }
+	//     },
+	//     type: 'GET'
+	// });
 
 	removeClickListener();
 	alert(`Đặt xe thành công:
-		\n${selectedCall.value.PhoneNumber} - ${selectedCall.value.Name}
+		\n${selectedCall.value.PhoneNumber}
 		\nXe: ${car.carId} - Tài xế: ${car.username}`);
 	$("#button-reset-customer-address").click();
 }
@@ -306,7 +362,7 @@ function setSelected(ele) {
 }
 
 function requestCall(key) {
-	let url = `https://us-central1-my-grab.cloudfunctions.net/requestCall?key=${key}`;
+	let url = `${api.requestCall}?key=${key}`;
 	return $.ajax({
 	    url: url,
 	    dataType: 'json',

@@ -23,7 +23,7 @@ function showOnMap(callElement) {
 	markers=[];
 	let call = JSON.parse(callElement.getAttribute("data-call"));
 	if(call.value.Status === DONE) {
-		let url = `https://us-central1-my-grab.cloudfunctions.net/getCarByCallId?key=${call.key}`;
+		let url = `${api.getCarByCallId}?key=${call.key}`;
 		$.ajax({
 			    url: url,
 			    dataType: 'json',

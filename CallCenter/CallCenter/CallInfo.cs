@@ -15,6 +15,13 @@ namespace CallCenter
             get { return callId; }
             set { callId = value; }
         }
+        private string name;
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
         private string phoneNumber;
 
         public string PhoneNumber
