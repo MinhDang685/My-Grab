@@ -160,27 +160,40 @@ function getCallDetailByKey(key) {
 
         toggleMessageBox();
         $('#addressInfo').text(result.Address);
-
         countDown();
 
     });
 }
 
 function countDown() {
-    
+
         var time = 5;
 
         var interval = setInterval(function () {
 
             if(time >= 0){
                 $('#timeRemain').text(time);
-                console.log(time);
                 time--;
             }
 
             if($('#timeRemain').text() === '0'){
                 // clearInterval(interval);
-                cancel();
+
+                // cancel();
+
+                if(isProcess === false){
+                    let path = GRABCAR +'/'+ currentCarKey;
+                    database.ref(path).update({
+                        request: "reject"
+                    })
+                }
+                
+                // toggleMessageBox();
+                $('#verifyBox').hide();
+                $('#verifyBox').hide();
+                currentCallMatched = "";
+                currentCall = null;
+
                 $('#timeRemain').text('5');
                 isProcess = true;
             }
@@ -214,13 +227,18 @@ function initMap() {
     directionsService = new google.maps.DirectionsService;
     directionsDisplay = new google.maps.DirectionsRenderer; 
     directionsDisplay.suppressMarkers = false;
+    var marker = new google.maps.Marker({
+          position: currentLocation,
+          map: map
+        });
+
 
     google.maps.event.addListener(map, "click", function (e) {
 
         currentLocation = { lat: e.latLng.lat(), lng: e.latLng.lng()};
         if(currentCarKey !== "")
             updateCarLocation(currentCarKey,currentLocation.lat,currentLocation.lng);
-
+            marker.setPosition(currentLocation);
     });
 
     directionsDisplay.setMap(map);
