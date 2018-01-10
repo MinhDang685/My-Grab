@@ -232,11 +232,13 @@ function sendRequestToCar(callId, carId){
 			        	}
 			        	else if(requestState === 'reject'){
 			        		alert(`Xe ${carInfo.carId} từ chối`);
+			        		setCarField(carId, carInfo, 'request', '');
 			        	}
 			        	else {
 			        		alert(`Xe ${carInfo.carId} không phản hồi`);
+			        		setCarField(carId, carInfo, 'request', '');
 			        	}
-			        	setCarField(carId, carInfo, 'request', '');
+			        	carInfo.match = selectedCall.key;
 	        		});
 		        	
 	        	}, 5000);
@@ -245,40 +247,6 @@ function sendRequestToCar(callId, carId){
 	        }
 	    },
 	    type: 'GET'
-	});
-}
-
-function getCarField(carId, field) {
-	return $.ajax({
-	    url: `${api.getCarById}?id=${carId}`,
-	    dataType: 'json',
-	    success: function(data) {
-	        if(data === '') {}
-	        else {
-	        	if(typeof field !== 'undefined')
-	        		return data.field;
-	        	return data;
-	        }
-	    },
-	    type: 'GET'
-	});
-}
-
-function setCarField(carId, carInfo, field, value){
-	carInfo[field] = value;
-	$.ajax({
-	    url: `${api.setCarInfo}`,
-	    dataType: 'json',
-	    data: {
-	    	carId,
-	    	carInfo
-	    },
-	    success: function(data) {
-	        if(data === 'success') {
-	        	
-	        }
-	    },
-	    type: 'POST'
 	});
 }
 

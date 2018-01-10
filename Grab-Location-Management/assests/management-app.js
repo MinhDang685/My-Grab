@@ -5,7 +5,7 @@ $(function() {
 var selectedCall;
 var markers = [];
 var managementMap;
-var selectedCarRef;
+var selectedCarRef = null;
 function setSelected(ele) {
 	var self = ele;
 	if(typeof selectedCall !== 'undefined'){
@@ -13,13 +13,17 @@ function setSelected(ele) {
 	}
 	$(self).addClass("active");
 	selectedCall = self;
-	
+	if(selectedCarRef !== null)
+	{
+		selectedCarRef.off();
+	}
+	setMapOnAll(markers, null);
+	marker = [];
 	showOnMap(ele);
 }
 
 function showOnMap(callElement) {
 	directionsDisplay.set('directions', null);
-	setMapOnAll(markers, null);
 	markers=[];
 	let call = JSON.parse(callElement.getAttribute("data-call"));
 	if(call.value.Status === DONE 
@@ -31,6 +35,7 @@ function showOnMap(callElement) {
 			    success: function(result) {
 			    	if(result !== ""){
 			    		drawDirectionForThisCar(result, call);
+			    		vm.addCarPositionListener(result.key);
 			    	}
 			    },
 			    type: 'GET'
@@ -80,7 +85,9 @@ function drawDirectionForThisCar(car, call) {
     var service = new google.maps.places.PlacesService(managementMap);
     var destinationPlaceId;
     directionsService.route(request, function(result, status) {
+    	console.log('get direction');
         if (status == 'OK') {
+        	console.log('direction ok');
             directionsDisplay.setDirections(result);
             destinationPlaceId = result.geocoded_waypoints[1].place_id;
             service.getDetails({
@@ -100,20 +107,15 @@ function drawDirectionForThisCar(car, call) {
 			let marker = createMarker(managementMap, start, content, MARKER_GRABER);
 			markers.push(marker);
         }
+        else {
+        	console.log('direction failed');
+        }
     });
-    addCarPositionListener(car.key);
+    console.log('draw direction completed');
 	
 }
 
-function addCarPositionListener(carId){
-	let call = JSON.parse(callElement.getAttribute("data-call"));
-	selectedCarRef = database.ref(`${GRABCAR}/carId`);
-	selectedCarRef.on("child_changed", function(snapshot) {
-		getCarField(carId).then(function(data){
-			drawDirectionForThisCar(data, call);
-		});
-	});
-}
+
 
 var directionsService;
 var directionsDisplay;
@@ -163,6 +165,7 @@ var vm = new Vue({
 				}
 			}
 		//reload
+		setMapOnAll(markers, null);
 		});
 	},
 	methods: {
@@ -227,6 +230,19 @@ var vm = new Vue({
 			}
 			return inputAddress;
 		},
+
+		addCarPositionListener: function(carId){
+			setMapOnAll(markers, null);
+			marker = [];
+			console.log('redraw direction');
+			let call = JSON.parse(selectedCall.getAttribute("data-call"));
+			selectedCarRef = database.ref(`${GRABCAR}/${carId}`);
+			selectedCarRef.on("child_changed", function(snapshot) {
+				getCarField(carId).then(function(data){
+					drawDirectionForThisCar(data, call);
+				});
+			});
+		}
 	}
 });
 

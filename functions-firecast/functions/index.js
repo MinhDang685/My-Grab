@@ -96,7 +96,7 @@ var sortByDistance = function(a, b) {
     return a.distance > b.distance;
 }
 
-exports.autoResetGrabCarState = functions.database.ref(GRABCAR + "/{carID}/match")
+var autoResetGrabCarState = functions.database.ref(GRABCAR + "/{carID}/match")
     .onUpdate(event => {
         if (event.data.val() === "") {
             return;
@@ -224,6 +224,21 @@ exports.setCarInfo = functions.https.onRequest((request, response) => {
             [carId] : carInfo
         }).then(function(){
             console.log(`Car Id = ${carId} has been updated`);
+            response.status(200).json("success").end();
+        });
+        response.status(404).end();
+    });
+});
+
+exports.resetCarRequestField = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let carId = request.body.carId;
+        let carsRef = admin.database().ref(GRABCAR);
+        console.log(updatedCar);
+        return carsRef.update({
+            request: ""
+        }).then(function(){
+            console.log(`Car Id = ${carId} request has been updated`);
             response.status(200).json("success").end();
         });
         response.status(404).end();
