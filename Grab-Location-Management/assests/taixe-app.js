@@ -6,6 +6,9 @@ var isLogin = false;
 var isProcess = false;
 var isStart = false;
 
+var currentCarObject = {request: ""};
+var locker = false;
+
 var directionsService;
 var directionsDisplay;
 var geocoder;
@@ -35,12 +38,22 @@ $(function () {
     $('#accept').on('click', function() {
         isProcess = true;
         accept();
+        let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
+            database.ref(pathCall).update({
+                Status: 3
+            })
     });
 
     $('#startRun').on('click', function() {
         if(isStart === false) {
             isStart = true;
             $('#startRun').text("Finish");
+
+            let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
+            database.ref(pathCall).update({
+                Status: 4
+            })
+
         } else {
 
             $('#startRun').text("Start");
@@ -48,7 +61,12 @@ $(function () {
 
             let pathCar = GRABCAR +'/'+ currentCarKey;
             database.ref(pathCar).update({
-                request: ""
+                match: ""
+            })
+
+            let pathCall = CALL_HISTORY +'/'+ currentCallMatched;
+            database.ref(pathCall).update({
+                Status: 5
             })
 
             //set done
@@ -77,29 +95,32 @@ $(function () {
                 toggleMap();
                 toggleLogin();
                 initMap();
+
+                
             } else {
                 $('#errorMessage').text("Username or Password not match");
             }
         });
     });
 
-    //listen call assigned
-    let pathListen = GRABCAR+'/'+currentCarKey;
+    listenCarRequest();
+
+});
+
+function listenCarRequest() {
+    let pathListen = GRABCAR+'/'+ currentCarKey; //'-L2LelMWdY__wr5o1_VK';//
     var refListen = firebase.database().ref(pathListen);
 
     refListen.on('child_changed',function(data){
         var objChanged = data.val();
-        if(objChanged.request !== "" && objChanged.request !== "ok" && objChanged.request !== "reject" && objChanged.request !== currentCallMatched) {
-            
-            if(isLogin && data.key == currentCarKey){
-                currentCallMatched = objChanged.request;
-                getCallDetailByKey(currentCallMatched);
-            }
-    
+        // console.log("change");
+        if(objChanged.request !== "" && objChanged.request !== "ok" && objChanged.request !== "reject" && objChanged.request !== currentCallMatched && isLogin && data.key === currentCarKey ) {
+            currentCallMatched = objChanged.request;
+            getCallDetailByKey(currentCallMatched);
         }
-    });
 
-});
+    }); 
+}
 
 function cancel() {
 
@@ -107,6 +128,8 @@ function cancel() {
     database.ref(path).update({
         request: "reject"
     })
+
+    currentCarObject.request = "reject";
 
     // toggleMessageBox();
     $('#verifyBox').hide();
@@ -121,6 +144,7 @@ function accept() {
     database.ref(path).update({
         request: "ok"
     })
+    currentCarObject.request = "ok";
 
     drawRoute(directionsService, directionsDisplay,geocoder);
     drawDesMaker(geocoder);
@@ -177,10 +201,11 @@ function getCallDetailByKey(key) {
     refCallHistory.on('value', function(data) {
         var result = data.val();
         currentCall = result;
-
-        toggleMessageBox();
-        $('#addressInfo').text(result.Address);
-        countDown();
+        if(currentCall.Status !== 3) {
+            $('#verifyBox').show();
+            $('#addressInfo').text(result.Address);
+            countDown();
+        }
 
     });
 }
