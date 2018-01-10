@@ -4,7 +4,8 @@ const UNLOCATED = 0;
 const FINDING_CAR = 1;
 const NO_CAR = 2;
 const DONE = 3;
-const COMPLETE = 4;
+const RUNNING = 4;
+const COMPLETE = 5;
 const MARKER_CUSTOMER = "customerIcon";
 const MARKER_GRABER = "graberIcon";
 var BreakException = {};
@@ -240,6 +241,38 @@ function formatDate(strDate) {
     return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + strTime;
 }
 
+function getCarField(carId, field) {
+    return $.ajax({
+        url: `${api.getCarById}?id=${carId}`,
+        dataType: 'json',
+        success: function(data) {
+            if(data === '') {}
+            else {
+                if(typeof field !== 'undefined')
+                    return data.field;
+                return data;
+            }
+        },
+        type: 'GET'
+    });
+}
 
+function setCarField(carId, carInfo, field, value){
+    carInfo[field] = value;
+    $.ajax({
+        url: `${api.setCarInfo}`,
+        dataType: 'json',
+        data: {
+            carId,
+            carInfo
+        },
+        success: function(data) {
+            if(data === 'success') {
+                
+            }
+        },
+        type: 'POST'
+    });
+}
 
 

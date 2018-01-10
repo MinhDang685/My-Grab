@@ -96,7 +96,7 @@ var sortByDistance = function(a, b) {
     return a.distance > b.distance;
 }
 
-exports.resetGrabCarState = functions.database.ref(GRABCAR + "/{carID}/match")
+exports.autoResetGrabCarState = functions.database.ref(GRABCAR + "/{carID}/match")
     .onUpdate(event => {
         if (event.data.val() === "") {
             return;
@@ -109,11 +109,22 @@ exports.resetGrabCarState = functions.database.ref(GRABCAR + "/{carID}/match")
         return;
 });
 
+exports.resetState = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let carId = request.query.carId;
+        let ref = admin.database().ref(GRABCAR + `/${carId}`);
+        return ref.once('value').then(snapshot => {
+            setCarState(ref, snapshot.val());
+            return;
+        });
+    });
+});
+
 var setCarState = function(carRef, car) {
     //set call state = complete
     let callRef = admin.database().ref(CALL_HISTORY + `/${car.match}`);
     let updateCallDb = callRef.update({
-        Status: 4,
+        Status: 5,
     }).then(function(){
         console.log(`Call Id = ${car.match} is complete now`);
     });
@@ -153,7 +164,9 @@ exports.getCarByCallId = functions.https.onRequest((request, response) => {
         return ref.once('value').then(snapshot => {
             snapshot.forEach(function(car, index){
                 if(car.val().match === callId) {
-                    response.status(200).json(car).end();
+                    let carInfo = car.val();
+                    carInfo.key = car.key;
+                    response.status(200).json(carInfo).end();
                 }
             });
             response.status(200).json("").end();
