@@ -96,24 +96,35 @@ var sortByDistance = function(a, b) {
     return a.distance > b.distance;
 }
 
-exports.resetGrabCarState = functions.database.ref(GRABCAR + "/{carID}")
+exports.autoResetGrabCarState = functions.database.ref(GRABCAR + "/{carID}/match")
     .onUpdate(event => {
-        let car = event.data.val();
-        if (car.match === "") {
-            return true;
+        if (event.data.val() === "") {
+            return;
         }
+        let car = event.data.adminRef.parent().val();
         console.log(`Reset car ${car.carId}'s state after 120s`);
         setTimeout(() => {
             setCarState(event.data.ref, car);
-        }, 10000);
-        return true;
+        }, 30000);
+        return;
+});
+
+exports.resetState = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let carId = request.query.carId;
+        let ref = admin.database().ref(GRABCAR + `/${carId}`);
+        return ref.once('value').then(snapshot => {
+            setCarState(ref, snapshot.val());
+            return;
+        });
+    });
 });
 
 var setCarState = function(carRef, car) {
     //set call state = complete
     let callRef = admin.database().ref(CALL_HISTORY + `/${car.match}`);
     let updateCallDb = callRef.update({
-        Status: 4,
+        Status: 5,
     }).then(function(){
         console.log(`Call Id = ${car.match} is complete now`);
     });
@@ -153,7 +164,9 @@ exports.getCarByCallId = functions.https.onRequest((request, response) => {
         return ref.once('value').then(snapshot => {
             snapshot.forEach(function(car, index){
                 if(car.val().match === callId) {
-                    response.status(200).json(car).end();
+                    let carInfo = car.val();
+                    carInfo.key = car.key;
+                    response.status(200).json(carInfo).end();
                 }
             });
             response.status(200).json("").end();
@@ -176,9 +189,20 @@ exports.getCarByUsername = functions.https.onRequest((request, response) => {
     });
 });
 
+exports.getCarById = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let key = request.query.id;
+        let ref = admin.database().ref(GRABCAR + `/${key}`);
+        return ref.once('value').then(snapshot => {
+            response.status(200).json(snapshot).end();
+        });
+        response.status(200).json("").end();
+    });
+});
+
 exports.getCallById = functions.https.onRequest((request, response) => {
     cors(request, response, () => {
-        let callId = request.query.key;
+        let callId = request.query.id;
         let ref = admin.database().ref(CALL_HISTORY + `/${callId}`);
         return ref.once('value').then(snapshot => {
             response.status(200).json(snapshot).end();
@@ -191,11 +215,33 @@ exports.setCarInfo = functions.https.onRequest((request, response) => {
     cors(request, response, () => {
         let carId = request.body.carId;
         let carInfo = request.body.carInfo;
-        let carRef = admin.database().ref(GRABCAR + `/${carId}`);
-        carRef.update({
-            carInfo
+        let carsRef = admin.database().ref(GRABCAR);
+        let updatedCar = {
+            [carId] : carInfo
+        };
+        console.log(updatedCar);
+        return carsRef.update({
+            [carId] : carInfo
         }).then(function(){
             console.log(`Car Id = ${carId} has been updated`);
+            response.status(200).json("success").end();
+        });
+        response.status(404).end();
+    });
+});
+
+exports.sendRequestToCar = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        let carId = request.query.carId;
+        let callId = request.query.callId;
+        let carInfo = {
+            request: callId,
+        };
+        let carRef = admin.database().ref(GRABCAR + `/${carId}`);
+        return carRef.update({
+            request: callId
+        }).then(function(){
+            console.log(`Car Id = ${carId} has been request for call Id = ${callId}`);
             response.status(200).json("success").end();
         });
         response.status(404).end();

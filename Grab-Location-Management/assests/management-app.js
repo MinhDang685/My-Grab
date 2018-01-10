@@ -5,7 +5,7 @@ $(function() {
 var selectedCall;
 var markers = [];
 var managementMap;
-
+var selectedCarRef;
 function setSelected(ele) {
 	var self = ele;
 	if(typeof selectedCall !== 'undefined'){
@@ -22,8 +22,9 @@ function showOnMap(callElement) {
 	setMapOnAll(markers, null);
 	markers=[];
 	let call = JSON.parse(callElement.getAttribute("data-call"));
-	if(call.value.Status === DONE) {
-		let url = `https://us-central1-my-grab.cloudfunctions.net/getCarByCallId?key=${call.key}`;
+	if(call.value.Status === DONE 
+		|| call.value.Status === RUNNING) {
+		let url = `${api.getCarByCallId}?key=${call.key}`;
 		$.ajax({
 			    url: url,
 			    dataType: 'json',
@@ -34,18 +35,6 @@ function showOnMap(callElement) {
 			    },
 			    type: 'GET'
 			});
-
-		// try {
-		// 	vm.cars.forEach(function(car, index) {
-		// 		let carMatch = car.value.match;
-		// 		if(carMatch.indexOf(call.key) !== -1) {
-		// 			drawDirectionForThisCar(car, call);
-		// 			throw BreakException;
-		// 		}
-		// 	});
-		// } catch (e) {
-		// 	if (e !== BreakException) throw e;
-		// }
 	}
 	else {
 		
@@ -112,9 +101,20 @@ function drawDirectionForThisCar(car, call) {
 			markers.push(marker);
         }
     });
-    
+    addCarPositionListener(car.key);
 	
 }
+
+function addCarPositionListener(carId){
+	let call = JSON.parse(callElement.getAttribute("data-call"));
+	selectedCarRef = database.ref(`${GRABCAR}/carId`);
+	selectedCarRef.on("child_changed", function(snapshot) {
+		getCarField(carId).then(function(data){
+			drawDirectionForThisCar(data, call);
+		});
+	});
+}
+
 var directionsService;
 var directionsDisplay;
 var geocoder;
@@ -142,7 +142,7 @@ var vm = new Vue({
 	mounted: function(){
 		var self = this;
 		callsRef.on('child_added', function(childSnapshot, prevChildKey) {
-			if (childSnapshot.val().Status !== 4) {
+			if (childSnapshot.val().Status !== COMPLETE) {
 			    self.calls.push({
 			        key: childSnapshot.key,
 			        value: childSnapshot.val(),
@@ -162,6 +162,7 @@ var vm = new Vue({
 					break;
 				}
 			}
+		//reload
 		});
 	},
 	methods: {
@@ -182,13 +183,15 @@ var vm = new Vue({
 		getStatusName: function(status) {
 			switch(status) {
 				case UNLOCATED:
-					return "Unlocated";
+					return "Locating";
 				case FINDING_CAR:
-					return "Searching";
+					return "Finding car";
 				case NO_CAR:
 					return "No car";
 				case DONE:
-					return "Done";
+					return "Searching done";
+				case RUNNING:
+					return "Running";
 			};
 			return "Done";
 		},
@@ -203,6 +206,8 @@ var vm = new Vue({
 					return "Violet";
 				case DONE:
 					return "Aqua";
+				case RUNNING:
+					return "Orange";
 			};
 			return "Brown";
 		},

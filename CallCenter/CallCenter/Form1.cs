@@ -33,6 +33,7 @@ namespace CallCenter
             DateTime callDate = DateTime.Now;
             string inputAddress = textBoxAddress.Text;
             string address = "";
+            string name = "";
             if (addressStatus == ConstantValue.FINDING_CAR)
             {
                 address = inputAddress;

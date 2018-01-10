@@ -4,7 +4,8 @@ const UNLOCATED = 0;
 const FINDING_CAR = 1;
 const NO_CAR = 2;
 const DONE = 3;
-const COMPLETE = 4;
+const RUNNING = 4;
+const COMPLETE = 5;
 const MARKER_CUSTOMER = "customerIcon";
 const MARKER_GRABER = "graberIcon";
 var BreakException = {};
@@ -20,6 +21,14 @@ var icons = {
     graberIcon: {
         icon: './assests/icon/marker-start.png'
     },
+};
+var api = {
+    getCarById: 'https://us-central1-my-grab.cloudfunctions.net/getCarById',
+    setCarInfo: 'https://us-central1-my-grab.cloudfunctions.net/setCarInfo',
+    sendRequestToCar: 'https://us-central1-my-grab.cloudfunctions.net/sendRequestToCar',
+    requestCall: 'https://us-central1-my-grab.cloudfunctions.net/requestCall',
+    getGrabCarsNearThere: 'https://us-central1-my-grab.cloudfunctions.net/getGrabCarsNearThere',
+    getCarByCallId: 'https://us-central1-my-grab.cloudfunctions.net/getCarByCallId',
 };
 var searchRanges = [500, 1000, 10000];
 var cityCenter = {lat: 10.8043382, lng: 106.6565154};
@@ -115,7 +124,11 @@ function createMarker(map, point, content, iconId, infoList) {
         });
     
     marker.infowindow = new google.maps.InfoWindow();
+    selectedInfoWindow = marker.infowindow;
     marker.infowindow.setContent(content + "<br>" + marker.getPosition().toUrlValue(6));
+    if(typeof selectedInfoWindow !== 'undefined') {
+            selectedInfoWindow.close();
+        }
     google.maps.event.addListener(marker, "click", function(evt) {
         if(typeof selectedInfoWindow !== 'undefined') {
             selectedInfoWindow.close();
@@ -123,7 +136,6 @@ function createMarker(map, point, content, iconId, infoList) {
         marker.infowindow.open(map, marker);
         selectedInfoWindow = marker.infowindow;
     });
-
     return marker;
 }
 
@@ -229,6 +241,38 @@ function formatDate(strDate) {
     return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + strTime;
 }
 
+function getCarField(carId, field) {
+    return $.ajax({
+        url: `${api.getCarById}?id=${carId}`,
+        dataType: 'json',
+        success: function(data) {
+            if(data === '') {}
+            else {
+                if(typeof field !== 'undefined')
+                    return data.field;
+                return data;
+            }
+        },
+        type: 'GET'
+    });
+}
 
+function setCarField(carId, carInfo, field, value){
+    carInfo[field] = value;
+    $.ajax({
+        url: `${api.setCarInfo}`,
+        dataType: 'json',
+        data: {
+            carId,
+            carInfo
+        },
+        success: function(data) {
+            if(data === 'success') {
+                
+            }
+        },
+        type: 'POST'
+    });
+}
 
 

@@ -1,17 +1,21 @@
-.unlocated .list-group-item-heading.col-md-4{
+.unlocated .pull-right{
 	color: Gray;
 }
 
-.finding .list-group-item-heading.col-md-4{
+.finding .pull-right{
 	color: Blue;
 }
 
-.no-car .list-group-item-heading.col-md-4{
+.no-car .pull-right{
 	color: Red;
 }
 
-.done .list-group-item-heading.col-md-4{
+.done .pull-right{
 	color: LightSeaGreen;
+}
+
+.running .pull-right{
+	color: Orange;
 }
 
 .panel-body{
