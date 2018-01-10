@@ -151,7 +151,7 @@ exports.requestCall = functions.https.onRequest((request, response) => {
                 });
             }
             else {
-                response.status(403).send('Reject').end();
+                response.status(200).send('Reject').end();
             }
         });
     });

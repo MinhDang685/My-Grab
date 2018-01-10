@@ -308,50 +308,90 @@ function setSelected(ele) {
 	}
 	let call = JSON.parse(ele.getAttribute("data-call"));
 	requestedCall = call;
-	if(!requestCall(call.key)) {
-		alert('Cuộc gọi đã được thành viên khác tiếp nhận');
-		return;
-	}
-	else {
-		alert('Nhận cuộc gọi thành công');
-	}
-	var self = ele;
-	if(typeof selectedCallDiv !== 'undefined'){
-		$(selectedCallDiv).removeClass("active");
-	}
-	$(self).addClass("active");
-	selectedCallDiv = self;
-	
-	selectedCall = call;
+	let res = false;
+	$.ajax({
+	    url: `${api.requestCall}?key=${call.key}`,
+	    dataType: 'json',
+	     type: 'GET'}).then(function(data){
+	     		    	console.log(data);
+	    	debugger
+			res = data;
+			if(res === 'Reject'){
+				alert('Cuộc gọi đã được thành viên khác tiếp nhận');
+				return;
+			}
+			else if( res === 'Accept'){
+				alert('Nhận cuộc gọi thành công');
+				var self = ele;
+				if(typeof selectedCallDiv !== 'undefined'){
+					$(selectedCallDiv).removeClass("active");
+				}
+				$(self).addClass("active");
+				selectedCallDiv = self;
+				
+				selectedCall = call;
 
-	if (selectedCall.value.Status === FINDING_CAR) {
-		searchGeocode(selectedCall.value.Address).then(function(results){
-			showResultsOnMap(results);
-			$('.located-customer').click();
-		})
-	}
-	else {
-		$('#input-address').val(call.value.InputAddress);
-		//enable click listener for marker
-		addClickListener();
-	}
+				if (selectedCall.value.Status === FINDING_CAR) {
+					searchGeocode(selectedCall.value.Address).then(function(results){
+						showResultsOnMap(results);
+						$('.located-customer').click();
+					})
+				}
+				else {
+					$('#input-address').val(call.value.InputAddress);
+					//enable click listener for marker
+					addClickListener();
+				}
+			}
+	     })
+	     .fail(function(data){
+	     	res = data.responseText;
+			if(res === 'Reject'){
+				alert('Cuộc gọi đã được thành viên khác tiếp nhận');
+				return;
+			}
+			else if( res === 'Accept'){
+				alert('Nhận cuộc gọi thành công');
+				var self = ele;
+				if(typeof selectedCallDiv !== 'undefined'){
+					$(selectedCallDiv).removeClass("active");
+				}
+				$(self).addClass("active");
+				selectedCallDiv = self;
+				
+				selectedCall = call;
+
+				if (selectedCall.value.Status === FINDING_CAR) {
+					searchGeocode(selectedCall.value.Address).then(function(results){
+						showResultsOnMap(results);
+						$('.located-customer').click();
+					})
+				}
+				else {
+					$('#input-address').val(call.value.InputAddress);
+					//enable click listener for marker
+					addClickListener();
+				}
+			}
+	     })
+	   
+	
+
+	
 }
 
 function requestCall(key) {
 	let url = `${api.requestCall}?key=${key}`;
-	return $.ajax({
+	var deferred = $.Deferred();
+	$.ajax({
 	    url: url,
 	    dataType: 'json',
 	    success: function(data) {
-	        if(data === 'Reject') {
-	        	return false;
-	        }
-	        else {
-	        	return true;
-	        }
+	        deferred.resolve(results);
 	    },
 	    type: 'GET'
 	});
+	return deferred.promise();
 }
 
 function resetCustomerAddress() {
